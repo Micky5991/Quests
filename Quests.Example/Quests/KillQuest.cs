@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
@@ -11,6 +12,8 @@ namespace Micky5991.Quests.Example.Quests
 {
     public class KillQuest : QuestBase
     {
+        public const int RequiredKills = 5;
+
         private readonly IEventAggregator eventAggregator;
 
         private readonly ILogger<KillQuest> logger;
@@ -59,7 +62,7 @@ namespace Micky5991.Quests.Example.Quests
 
         private void UpdateDescription()
         {
-            this.Description = $"Kill {5 - this.kills} enemies";
+            this.Description = $"Kill {RequiredKills - this.kills} enemies";
         }
 
         private void OnPlayerKill(KillEvent eventdata)
@@ -71,7 +74,7 @@ namespace Micky5991.Quests.Example.Quests
 
             this.logger.LogInformation("Kill registered");
 
-            this.Kills++;
+            this.Kills = Math.Min(RequiredKills, this.Kills + 1);
         }
 
         public override void Dispose()
