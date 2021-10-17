@@ -19,37 +19,19 @@ namespace Micky5991.Quests.Example
             Console.WriteLine("Start Quests Example");
 
             var questRegistry = new ExampleQuestRegistry();
-            var player = new Player();
-            var enemy = new Enemy();
             var provider = BuildServiceProvider(questRegistry);
 
             Console.WriteLine("ServiceProvider built");
 
-            var factory = provider.GetService<IQuestFactory>();
-            if (factory == null)
+            var game = provider.GetService<GameLogic>();
+            if (game == null)
             {
-                Console.WriteLine($"Unable to find {nameof(IQuestFactory)} service");
+                Console.WriteLine($"Unable to find {nameof(GameLogic)} service");
 
                 return;
             }
 
-            var eventAggregator = provider.GetService<IEventAggregator>();
-            if (eventAggregator == null)
-            {
-                Console.WriteLine($"Unable to find {nameof(IEventAggregator)} service");
-
-                return;
-            }
-
-            var killQuest = factory.BuildQuest<KillQuest>();
-            killQuest.TransitionTo(QuestStatus.Active);
-
-            player.AddQuest(killQuest);
-            player.PrintQuestGoals();
-
-            eventAggregator.Publish(new KillEvent(player, enemy, 1));
-
-            player.PrintQuestGoals();
+            game.Run();
         }
 
         private static IServiceProvider BuildServiceProvider(QuestRegistry registry)
@@ -62,6 +44,7 @@ namespace Micky5991.Quests.Example
             var services = new ServiceCollection();
             services
                 .AddTransient<IQuestFactory, QuestFactory>()
+                .AddSingleton<GameLogic>()
                 .AddSingleton<IEventAggregator, EventAggregatorService>()
                 .AddSingleton(_ => registry)
                 .AddLogging(builder => builder.AddSerilog(logger, true));
