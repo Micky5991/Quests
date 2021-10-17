@@ -8,25 +8,13 @@ public class WelcomeHomeQuest : QuestRootNode
 {
     public WelcomeHomeQuest(IEventAggregator eventAggregator)
     {
-        this.Title = "Welcome Home";
+        this.Title = "In The Beginning";
 
         this.SetChildQuests(
-                            new QuestParallelNode(this)
+                            new QuestSequenceNode(this)
                             {
-                                new QuestSequenceNode(this)
-                                {
-                                    new KillTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                },
-                                new QuestParallelNode(this)
-                                {
-                                    new KillTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                },
+                                new EnterZoneTask(this, 5, eventAggregator),
+                                new KillTask(this, eventAggregator),
                             });
     }
 }

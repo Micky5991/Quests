@@ -1,7 +1,7 @@
-using System.ComponentModel;
-using Dawn;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
+using Micky5991.Quests.Enums;
+using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Example.Quests.Childs
@@ -14,23 +14,6 @@ namespace Micky5991.Quests.Example.Quests.Childs
 
         private int kills;
 
-        public int Kills
-        {
-            get => this.kills;
-            private set
-            {
-                if (this.kills == value)
-                {
-                    return;
-                }
-
-                Guard.Argument(value, nameof(value)).Min(0);
-
-                this.kills = value;
-                this.OnPropertyChanged();
-            }
-        }
-
         public KillTask(IQuestRootNode rootNode, IEventAggregator eventAggregator)
             : base(rootNode)
         {
@@ -39,8 +22,6 @@ namespace Micky5991.Quests.Example.Quests.Childs
 
         public override void Initialize()
         {
-            this.PropertyChanged += this.HandlePropertyChange;
-
             this.UpdateTitle();
         }
 
@@ -56,24 +37,13 @@ namespace Micky5991.Quests.Example.Quests.Childs
 
         private void OnPlayerKill(KillEvent eventdata)
         {
-            this.Kills = Math.Min(RequiredKills, this.Kills + 1);
-        }
+            this.kills = Math.Min(RequiredKills, this.kills + 1);
 
-        public override void Dispose()
-        {
-            GC.SuppressFinalize(this);
+            this.UpdateTitle();
 
-            this.PropertyChanged -= this.HandlePropertyChange;
-        }
-
-        private void HandlePropertyChange(object? sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
+            if (this.kills >= RequiredKills)
             {
-                case nameof(this.Kills):
-                    this.UpdateTitle();
-
-                    break;
+                this.MarkAsSuccess();
             }
         }
     }

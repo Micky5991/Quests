@@ -46,7 +46,7 @@ public abstract class QuestChildNode : IQuestChildNode
     public QuestStatus Status
     {
         get => this.status;
-        protected set
+        private set
         {
             if (this.status == value)
             {
@@ -99,6 +99,32 @@ public abstract class QuestChildNode : IQuestChildNode
         }
 
         this.Status = QuestStatus.Sleeping;
+    }
+
+    /// <inheritdoc />
+    public virtual void MarkAsFailure()
+    {
+        if (this.Status is not QuestStatus.Active or QuestStatus.Sleeping)
+        {
+            return;
+        }
+
+        this.Deactivate();
+
+        this.Status = QuestStatus.Failure;
+    }
+
+    /// <inheritdoc />
+    protected virtual void MarkAsSuccess()
+    {
+        if (this.Status is not QuestStatus.Active or QuestStatus.Sleeping)
+        {
+            return;
+        }
+
+        this.Deactivate();
+
+        this.Status = QuestStatus.Success;
     }
 
     /// <inheritdoc />

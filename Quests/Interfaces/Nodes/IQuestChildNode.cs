@@ -13,4 +13,6 @@ public interface IQuestChildNode : IQuestNode
     public void Activate();
 
     public void Deactivate();
+
+    public void MarkAsFailure();
 }

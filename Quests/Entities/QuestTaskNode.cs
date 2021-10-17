@@ -48,6 +48,12 @@ public abstract class QuestTaskNode : QuestChildNode, IQuestTaskNode
         this.DetachEventListeners();
     }
 
+    /// <inheritdoc />
+    public override void Initialize()
+    {
+        // Empty
+    }
+
     protected abstract IEnumerable<ISubscription> AttachEventListeners();
 
     protected virtual void DetachEventListeners()
