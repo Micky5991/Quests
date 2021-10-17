@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Micky5991.EventAggregator.Interfaces;
@@ -112,13 +113,22 @@ namespace Micky5991.Quests.Entities
 
             switch (newStatus)
             {
-                case QuestStatus.Active when this.Status == QuestStatus.Locked:
-                case QuestStatus.Active when this.Status == QuestStatus.Done:
-                case QuestStatus.Active when this.Status == QuestStatus.Failed:
+                case QuestStatus.Active when new[]
+                    {
+                        QuestStatus.Locked,
+                        QuestStatus.Done,
+                        QuestStatus.Failed,
+                    }
+                    .Contains(this.Status):
 
-                case QuestStatus.Locked when this.Status == QuestStatus.Active:
-                case QuestStatus.Locked when this.Status == QuestStatus.Done:
-                case QuestStatus.Locked when this.Status == QuestStatus.Failed:
+                case QuestStatus.Locked when new[]
+                    {
+                        QuestStatus.Active,
+                        QuestStatus.Done,
+                        QuestStatus.Failed,
+                    }
+                    .Contains(this.Status):
+
                     this.Status = newStatus;
 
                     break;
