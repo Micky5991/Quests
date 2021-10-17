@@ -7,9 +7,9 @@ namespace Micky5991.Quests.Example
 {
     public class ExampleQuestRegistry : QuestRegistry
     {
-        protected override IEnumerable<QuestMeta> LoadQuests()
+        protected override IEnumerable<QuestMeta> BuildAvailableQuestMeta()
         {
-            yield return this.RegisterQuest<KillQuest>();
+            yield return this.BuildQuest<KillQuest>();
         }
     }
 }

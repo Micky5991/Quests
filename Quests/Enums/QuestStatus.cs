@@ -1,5 +1,8 @@
 namespace Micky5991.Quests.Enums
 {
+    /// <summary>
+    /// List of states available of the current quest node.
+    /// </summary>
     public enum QuestStatus
     {
         /// <summary>
