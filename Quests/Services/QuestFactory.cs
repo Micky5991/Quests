@@ -1,34 +1,25 @@
-using System;
-using System.Collections.Immutable;
-using Micky5991.Quests.Interfaces.Entities;
+using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Micky5991.Quests.Services
+namespace Micky5991.Quests.Services;
+
+public class QuestFactory : IQuestFactory
 {
-    /// <inheritdoc />
-    public class QuestFactory : IQuestFactory
+    private readonly IServiceProvider serviceProvider;
+
+    public QuestFactory(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider serviceProvider;
+        this.serviceProvider = serviceProvider;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuestFactory"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">Service provider which is able to create <see cref="IQuest"/> objects.</param>
-        public QuestFactory(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
+    public IQuestRootNode BuildQuest<T>()
+        where T : IQuestRootNode
+    {
+        var quest = this.serviceProvider.GetService<T>();
 
-        /// <inheritdoc />
-        public T BuildQuest<T>(IImmutableDictionary<string, object>? context)
-            where T : IQuest
-        {
-            var quest = this.serviceProvider.GetService<T>();
+        quest.Initialize();
 
-            quest.Initialize(context);
-
-            return quest;
-        }
+        return quest;
     }
 }

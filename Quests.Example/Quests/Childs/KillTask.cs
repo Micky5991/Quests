@@ -1,22 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel;
 using Dawn;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
-using Micky5991.Quests.Enums;
-using Microsoft.Extensions.Logging;
+using Micky5991.Quests.Interfaces.Nodes;
 
-namespace Micky5991.Quests.Example.Quests
+namespace Micky5991.Quests.Example.Quests.Childs
 {
-    public class KillQuest : QuestBase
+    public class KillTask : QuestTaskNode
     {
         public const int RequiredKills = 5;
 
         private readonly IEventAggregator eventAggregator;
-
-        private readonly ILogger<KillQuest> logger;
 
         private int kills;
 
@@ -33,53 +27,41 @@ namespace Micky5991.Quests.Example.Quests
                 Guard.Argument(value, nameof(value)).Min(0);
 
                 this.kills = value;
-
                 this.OnPropertyChanged();
             }
         }
 
-        public override void Initialize(IImmutableDictionary<string, object>? initialContext = null)
-        {
-            base.Initialize(initialContext);
-
-            this.PropertyChanged += this.HandlePropertyChange;
-        }
-
-        public KillQuest(IEventAggregator eventAggregator, ILogger<KillQuest> logger)
+        public KillTask(IQuestRootNode rootNode, IEventAggregator eventAggregator)
+            : base(rootNode)
         {
             this.eventAggregator = eventAggregator;
-            this.logger = logger;
-
-            this.Title = "Kill enemies";
-
-            this.UpdateDescription();
         }
 
-        protected override IEnumerable<ISubscription> AddEventListeners()
+        public override void Initialize()
+        {
+            this.PropertyChanged += this.HandlePropertyChange;
+
+            this.UpdateTitle();
+        }
+
+        protected override IEnumerable<ISubscription> AttachEventListeners()
         {
             yield return this.eventAggregator.Subscribe<KillEvent>(this.OnPlayerKill);
         }
 
-        private void UpdateDescription()
+        private void UpdateTitle()
         {
-            this.Description = $"Kill {RequiredKills - this.kills} enemies";
+            this.Title = $"Kill {RequiredKills - this.kills} enemies";
         }
 
         private void OnPlayerKill(KillEvent eventdata)
         {
-            if (this.Status == QuestStatus.Locked)
-            {
-                return;
-            }
-
-            this.logger.LogInformation("Kill registered");
-
             this.Kills = Math.Min(RequiredKills, this.Kills + 1);
         }
 
         public override void Dispose()
         {
-            base.Dispose();
+            GC.SuppressFinalize(this);
 
             this.PropertyChanged -= this.HandlePropertyChange;
         }
@@ -89,7 +71,7 @@ namespace Micky5991.Quests.Example.Quests
             switch (e.PropertyName)
             {
                 case nameof(this.Kills):
-                    this.UpdateDescription();
+                    this.UpdateTitle();
 
                     break;
             }

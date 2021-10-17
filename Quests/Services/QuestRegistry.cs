@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using Micky5991.Quests.Entities;
-using Micky5991.Quests.Interfaces.Entities;
+using Micky5991.Quests.Interfaces.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Micky5991.Quests.Services
@@ -29,7 +28,7 @@ namespace Micky5991.Quests.Services
         }
 
         /// <summary>
-        /// Utility to add all build <see cref="IQuest"/> types to the <see cref="IServiceCollection"/> instance, so they
+        /// Utility to add all build <see cref="IQuestRootNode"/> types to the <see cref="IServiceCollection"/> instance, so they
         /// are available at all times. Quests will be transient.
         /// </summary>
         /// <param name="serviceCollection">List of services to add the service to.</param>
@@ -44,7 +43,7 @@ namespace Micky5991.Quests.Services
         /// <summary>
         /// Builds a list of <see cref="QuestMeta"/> objects containing all available quests.
         /// </summary>
-        /// <returns>List of available <see cref="IQuest"/> objects.</returns>
+        /// <returns>List of available <see cref="QuestMeta"/> objects.</returns>
         protected abstract IEnumerable<QuestMeta> BuildAvailableQuestMeta();
 
         /// <summary>
@@ -53,7 +52,7 @@ namespace Micky5991.Quests.Services
         /// <typeparam name="T">Implementation of a single quest logic.</typeparam>
         /// <returns>Returns built <see cref="QuestMeta"/> object.</returns>
         protected QuestMeta BuildQuest<T>()
-            where T : IQuest
+            where T : IQuestRootNode
         {
             return new QuestMeta(typeof(T));
         }

@@ -1,6 +1,5 @@
-using System;
 using Micky5991.Quests.Enums;
-using Micky5991.Quests.Interfaces.Entities;
+using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Exceptions
 {
@@ -15,7 +14,7 @@ namespace Micky5991.Quests.Exceptions
         /// <param name="quest">Quest object in question to report invalid transition.</param>
         /// <param name="oldStatus">Old <see cref="QuestStatus"/>.</param>
         /// <param name="newStatus">New <see cref="QuestStatus"/>. This status could not be reached.</param>
-        public QuestTransitionException(IQuest quest, QuestStatus oldStatus, QuestStatus newStatus)
+        public QuestTransitionException(IQuestNode quest, QuestStatus oldStatus, QuestStatus newStatus)
             : base($"Unable to transition quest {quest} from state {oldStatus} to {newStatus}")
         {
         }

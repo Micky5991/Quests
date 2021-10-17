@@ -1,10 +1,5 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using Micky5991.EventAggregator.Interfaces;
+﻿using Micky5991.EventAggregator.Interfaces;
 using Micky5991.EventAggregator.Services;
-using Micky5991.Quests.Enums;
-using Micky5991.Quests.Example.Entities;
-using Micky5991.Quests.Example.Quests;
 using Micky5991.Quests.Interfaces.Services;
 using Micky5991.Quests.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,8 +38,8 @@ namespace Micky5991.Quests.Example
 
             var services = new ServiceCollection();
             services
-                .AddTransient<IQuestFactory, QuestFactory>()
                 .AddSingleton<GameLogic>()
+                .AddTransient<IQuestFactory, QuestFactory>()
                 .AddSingleton<IEventAggregator, EventAggregatorService>()
                 .AddSingleton(_ => registry)
                 .AddLogging(builder => builder.AddSerilog(logger, true));

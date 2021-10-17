@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Micky5991.Quests.Entities;
 using Micky5991.Quests.Example.Quests;
 using Micky5991.Quests.Services;
@@ -9,7 +8,7 @@ namespace Micky5991.Quests.Example
     {
         protected override IEnumerable<QuestMeta> BuildAvailableQuestMeta()
         {
-            yield return this.BuildQuest<KillQuest>();
+            yield return this.BuildQuest<WelcomeHomeQuest>();
         }
     }
 }

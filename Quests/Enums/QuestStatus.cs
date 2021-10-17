@@ -6,9 +6,9 @@ namespace Micky5991.Quests.Enums
     public enum QuestStatus
     {
         /// <summary>
-        /// Quest is not completed, but is currently locked.
+        /// Quest is currently not ready to listen to events and waits for activation.
         /// </summary>
-        Locked,
+        Sleeping,
 
         /// <summary>
         /// Quest is waiting to be completed and listens for events.
@@ -18,11 +18,11 @@ namespace Micky5991.Quests.Enums
         /// <summary>
         /// Quest has been finished successfully.
         /// </summary>
-        Done,
+        Success,
 
         /// <summary>
         /// Quest has been finished, but to a failed status.
         /// </summary>
-        Failed,
+        Failure,
     }
 }

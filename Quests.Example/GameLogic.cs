@@ -8,14 +8,14 @@ namespace Micky5991.Quests.Example
 {
     public class GameLogic
     {
-        private readonly IQuestFactory questFactory;
-
         private readonly IEventAggregator eventAggregator;
 
-        public GameLogic(IQuestFactory questFactory, IEventAggregator eventAggregator)
+        private readonly IQuestFactory questFactory;
+
+        public GameLogic(IEventAggregator eventAggregator, IQuestFactory questFactory)
         {
-            this.questFactory = questFactory;
             this.eventAggregator = eventAggregator;
+            this.questFactory = questFactory;
         }
 
         public void Run()
@@ -23,10 +23,8 @@ namespace Micky5991.Quests.Example
             var player = new Player();
             var enemy = new Enemy();
 
-            var killQuest = this.questFactory.BuildQuest<KillQuest>();
-            killQuest.TransitionTo(QuestStatus.Active);
+            player.AddQuest(this.questFactory.BuildQuest<WelcomeHomeQuest>());
 
-            player.AddQuest(killQuest);
             player.PrintQuestGoals();
 
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
