@@ -17,7 +17,6 @@
       <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
       <PackageReference Include="Micky5991.EventAggregator" Version="2.2.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.0, 6.0.0)" />
-      <PackageReference Include="stateless" Version="5.11.0" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
