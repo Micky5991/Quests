@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Example.Entities;
@@ -24,7 +25,9 @@ namespace Micky5991.Quests.Example
             var player = new Player();
             var enemy = new Enemy();
 
-            player.AddQuest(this.questFactory.BuildQuest<WelcomeHomeQuest>());
+            var quest = this.questFactory.BuildQuest<WelcomeHomeQuest>();
+
+            player.AddQuest(quest);
 
             player.PrintQuestGoals();
 
@@ -43,6 +46,8 @@ namespace Micky5991.Quests.Example
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
+            this.eventAggregator.Publish(new KillEvent(enemy, player, 1));
+
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
 

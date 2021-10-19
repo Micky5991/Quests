@@ -1,6 +1,6 @@
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
-using Micky5991.Quests.Enums;
+using Micky5991.Quests.Example.Entities;
 using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;
 
@@ -18,14 +18,11 @@ namespace Micky5991.Quests.Example.Quests.Childs
             : base(rootNode)
         {
             this.eventAggregator = eventAggregator;
-        }
 
-        public override void Initialize()
-        {
             this.UpdateTitle();
         }
 
-        protected override IEnumerable<ISubscription> AttachEventListeners()
+        protected override IEnumerable<ISubscription> GetEventSubscriptions()
         {
             yield return this.eventAggregator.Subscribe<KillEvent>(this.OnPlayerKill);
         }
@@ -37,6 +34,11 @@ namespace Micky5991.Quests.Example.Quests.Childs
 
         private void OnPlayerKill(KillEvent eventdata)
         {
+            if (eventdata.Killer is not Player)
+            {
+                return;
+            }
+
             this.kills = Math.Min(RequiredKills, this.kills + 1);
 
             this.UpdateTitle();

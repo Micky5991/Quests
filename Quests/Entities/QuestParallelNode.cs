@@ -1,45 +1,90 @@
-using JetBrains.Annotations;
+using System.ComponentModel;
+using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Entities;
 
 public class QuestParallelNode : QuestCompositeNode
 {
-    public QuestParallelNode([NotNull] IQuestRootNode rootNode)
+    public QuestParallelNode(IQuestRootNode rootNode)
         : base(rootNode)
     {
         this.Title = "PARALLEL NODE";
     }
 
     /// <inheritdoc />
-    public override void Activate()
+    public override void Add(IQuestChildNode childNode)
     {
-        if (this.CanActivate() == false)
-        {
-            return;
-        }
+        base.Add(childNode);
 
-        foreach (var childNode in this.ChildNodes.Where(x => x.CanActivate()))
-        {
-            childNode.Activate();
-        }
-
-        base.Activate();
+        childNode.PropertyChanged += this.OnChildNodePropertyChanged;
     }
 
     /// <inheritdoc />
-    public override void Deactivate()
+    public override void Dispose()
     {
-        if (this.CanDeactivate() == false)
+        foreach (var childNode in this.ChildNodes)
+        {
+            childNode.PropertyChanged -= this.OnChildNodePropertyChanged;
+        }
+
+        base.Dispose();
+    }
+
+    /// <inheritdoc />
+    protected override void OnStatusChanged(QuestStatus newStatus)
+    {
+        switch (newStatus)
+        {
+            case QuestStatus.Active:
+                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsActive()))
+                {
+                    childNode.MarkAsActive();
+                }
+
+                break;
+
+            case QuestStatus.Sleeping:
+                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsSleeping()))
+                {
+                    childNode.MarkAsSleeping();
+                }
+
+                break;
+
+            case QuestStatus.Failure:
+                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsFailure()))
+                {
+                    childNode.MarkAsFailure();
+                }
+
+                break;
+        }
+
+        base.OnStatusChanged(newStatus);
+    }
+
+    private void OnChildNodePropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not IQuestChildNode childNode || this.ChildNodes.Contains(childNode) == false)
         {
             return;
         }
 
-        foreach (var childNode in this.ChildNodes)
+        switch (e.PropertyName)
         {
-            childNode.Deactivate();
-        }
+            case nameof(IQuestChildNode.Status) when childNode.Status == QuestStatus.Failure:
+                this.MarkAsFailure();
 
-        base.Deactivate();
+                break;
+
+            case nameof(IQuestChildNode.Status) when childNode.Status == QuestStatus.Success:
+                if (this.ChildNodes.Count(x => x.Finished == false) == 0)
+                {
+                    this.MarkAsSuccess();
+                }
+
+                break;
+        }
     }
 }

@@ -22,7 +22,7 @@ public interface IQuestNode : INotifyPropertyChanged, IDisposable
     /// <summary>
     /// Gets a value indicating whether the current quest node has been completed.
     /// </summary>
-    public bool Completed { get; }
+    public bool Finished { get; }
 
     /// <summary>
     /// Prepares the quest and executes actions needed to use this <see cref="IQuestNode"/>.

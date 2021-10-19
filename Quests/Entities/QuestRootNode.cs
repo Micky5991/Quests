@@ -52,7 +52,7 @@ public abstract class QuestRootNode : IQuestRootNode
     }
 
     /// <inheritdoc />
-    public bool Completed => this.Status == QuestStatus.Failure || this.Status == QuestStatus.Success;
+    public bool Finished => this.Status == QuestStatus.Failure || this.Status == QuestStatus.Success;
 
     /// <inheritdoc />
     public IImmutableDictionary<string, object> Blackboard { get; set; } = ImmutableDictionary<string, object>.Empty;
@@ -81,7 +81,7 @@ public abstract class QuestRootNode : IQuestRootNode
 
         this.AttachChildNodeWatchers();
 
-        this.ChildNode.Activate();
+        this.ChildNode.MarkAsActive();
     }
 
     public IImmutableList<IQuestTaskNode> GetQuestTasks(Func<IQuestTaskNode>? selector = null)

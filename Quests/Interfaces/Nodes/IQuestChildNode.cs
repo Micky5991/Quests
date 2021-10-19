@@ -4,15 +4,15 @@ public interface IQuestChildNode : IQuestNode
 {
     public IQuestRootNode RootNode { get; }
 
-    public bool Deactivated { get; }
+    public bool CanMarkAsActive();
 
-    public bool CanActivate();
+    public bool CanMarkAsSleeping();
 
-    public bool CanDeactivate();
+    public bool CanMarkAsFailure();
 
-    public void Activate();
+    public void MarkAsActive();
 
-    public void Deactivate();
+    public void MarkAsSleeping();
 
     public void MarkAsFailure();
 }

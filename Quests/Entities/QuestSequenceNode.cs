@@ -6,8 +6,6 @@ namespace Micky5991.Quests.Entities;
 
 public class QuestSequenceNode : QuestCompositeNode
 {
-    private IQuestChildNode? currentActiveNode;
-
     public QuestSequenceNode(IQuestRootNode rootNode)
         : base(rootNode)
     {
@@ -15,99 +13,90 @@ public class QuestSequenceNode : QuestCompositeNode
     }
 
     /// <inheritdoc />
-    public override void Activate()
+    public override void Add(IQuestChildNode childNode)
     {
-        if (this.CanActivate() == false)
-        {
-            return;
-        }
+        base.Add(childNode);
 
-        this.ActivateNextChildNode();
-        base.Activate();
+        childNode.PropertyChanged += this.OnChildPropertyChanged;
     }
 
     /// <inheritdoc />
-    public override void Deactivate()
+    public override void Dispose()
     {
-        if (this.CanDeactivate() == false)
-        {
-            return;
-        }
-
         foreach (var childNode in this.ChildNodes)
         {
-            childNode.Deactivate();
+            childNode.PropertyChanged -= this.OnChildPropertyChanged;
         }
 
-        base.Deactivate();
-
-        if (this.currentActiveNode == null)
-        {
-            return;
-        }
-
-        this.UnwatchChildNodeProperties(this.currentActiveNode);
-        this.currentActiveNode = null;
+        base.Dispose();
     }
 
-    private bool ActivateNextChildNode()
+    /// <inheritdoc />
+    protected override void OnStatusChanged(QuestStatus newStatus)
     {
-        if (this.currentActiveNode != null)
+        switch (newStatus)
         {
-            this.UnwatchChildNodeProperties(this.currentActiveNode);
-            this.currentActiveNode = null;
-        }
-
-        var firstUncompletedQuest = this.ChildNodes.FirstOrDefault(x => x.CanActivate());
-        if (firstUncompletedQuest == null)
-        {
-            return false;
-        }
-
-        this.WatchChildNodeProperties(firstUncompletedQuest);
-        this.currentActiveNode = firstUncompletedQuest;
-
-        firstUncompletedQuest.Activate();
-
-        return true;
-    }
-
-    private void WatchChildNodeProperties(IQuestChildNode node)
-    {
-        node.PropertyChanged += this.OnChildPropertyChanged;
-    }
-
-    private void UnwatchChildNodeProperties(IQuestChildNode node)
-    {
-        node.PropertyChanged -= this.OnChildPropertyChanged;
-    }
-
-    private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (this.currentActiveNode == null)
-        {
-            return;
-        }
-
-        switch (e.PropertyName)
-        {
-            case nameof(IQuestChildNode.Status) when this.currentActiveNode.Status is QuestStatus.Success:
-                var nextFound = this.ActivateNextChildNode();
-                if (nextFound == false)
+            case QuestStatus.Failure:
+                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsFailure()))
                 {
-                    this.MarkAsSuccess();
+                    childNode.MarkAsFailure();
                 }
 
                 break;
 
-            case nameof(IQuestChildNode.Status) when this.currentActiveNode.Status is QuestStatus.Failure:
-                this.UnwatchChildNodeProperties(this.currentActiveNode);
-                this.currentActiveNode = null;
+            case QuestStatus.Active:
+                this.MarkNextChildNodeAsActive();
 
-                foreach (var uncompletedChildNode in this.ChildNodes.Where(x => x.Completed == false))
-                {
-                    uncompletedChildNode.MarkAsFailure();
-                }
+                break;
+
+            case QuestStatus.Sleeping:
+                this.MarkAllChildNodesAsSleeping();
+
+                break;
+        }
+
+        base.OnStatusChanged(newStatus);
+    }
+
+    private void MarkAllChildNodesAsSleeping()
+    {
+        foreach (var activeNode in this.ChildNodes.Where(x => x.CanMarkAsSleeping()))
+        {
+            activeNode.MarkAsSleeping();
+        }
+    }
+
+    private void MarkNextChildNodeAsActive()
+    {
+        if (this.ChildNodes.Any(x => x.Status == QuestStatus.Failure))
+        {
+            this.MarkAsFailure();
+
+            return;
+        }
+
+        this.MarkAllChildNodesAsSleeping();
+
+        var firstUncompletedQuest = this.ChildNodes.FirstOrDefault(x => x.Finished == false);
+        if (firstUncompletedQuest == null)
+        {
+            this.MarkAsSuccess();
+
+            return;
+        }
+
+        firstUncompletedQuest.MarkAsActive();
+    }
+
+    private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(IQuestChildNode.Status)
+                when sender is IQuestChildNode childNode &&
+                     childNode.Status is QuestStatus.Success or QuestStatus.Failure:
+
+                this.MarkNextChildNodeAsActive();
 
                 break;
         }

@@ -59,30 +59,33 @@ public abstract class QuestChildNode : IQuestChildNode
     }
 
     /// <inheritdoc />
-    public bool Completed => this.Status is QuestStatus.Success or QuestStatus.Failure;
+    public bool Finished => this.Status is QuestStatus.Success or QuestStatus.Failure;
 
     /// <inheritdoc />
     public IQuestRootNode RootNode { get; }
 
     /// <inheritdoc />
-    public bool Deactivated => this.Status != QuestStatus.Active;
-
-    /// <inheritdoc />
-    public virtual bool CanActivate()
+    public virtual void Initialize()
     {
-        return this.Deactivated && this.Completed == false;
+        this.PropertyChanged += (_, args) =>
+        {
+            switch (args.PropertyName)
+            {
+                case nameof(this.Status):
+                    this.OnStatusChanged(this.Status);
+
+                    break;
+            }
+        };
     }
 
     /// <inheritdoc />
-    public virtual bool CanDeactivate()
-    {
-        return this.Deactivated == false && this.Completed == false;
-    }
+    public abstract void Dispose();
 
     /// <inheritdoc />
-    public virtual void Activate()
+    public virtual void MarkAsActive()
     {
-        if (this.CanActivate() == false)
+        if (this.CanMarkAsActive() == false)
         {
             return;
         }
@@ -91,9 +94,9 @@ public abstract class QuestChildNode : IQuestChildNode
     }
 
     /// <inheritdoc />
-    public virtual void Deactivate()
+    public virtual void MarkAsSleeping()
     {
-        if (this.CanDeactivate() == false)
+        if (this.CanMarkAsSleeping() == false)
         {
             return;
         }
@@ -104,34 +107,47 @@ public abstract class QuestChildNode : IQuestChildNode
     /// <inheritdoc />
     public virtual void MarkAsFailure()
     {
-        if (this.Status is not QuestStatus.Active or QuestStatus.Sleeping)
+        if (this.CanMarkAsFailure() == false)
         {
             return;
         }
-
-        this.Deactivate();
 
         this.Status = QuestStatus.Failure;
     }
 
     /// <inheritdoc />
+    public virtual bool CanMarkAsActive()
+    {
+        return this.Status == QuestStatus.Sleeping;
+    }
+
+    /// <inheritdoc />
+    public virtual bool CanMarkAsSleeping()
+    {
+        return this.Status == QuestStatus.Active;
+    }
+
+    /// <inheritdoc />
+    public virtual bool CanMarkAsFailure()
+    {
+        return this.Status is QuestStatus.Active or QuestStatus.Sleeping;
+    }
+
+    /// <inheritdoc />
     protected virtual void MarkAsSuccess()
     {
-        if (this.Status is not QuestStatus.Active or QuestStatus.Sleeping)
+        if (this.CanMarkAsSuccess() == false)
         {
             return;
         }
 
-        this.Deactivate();
-
         this.Status = QuestStatus.Success;
     }
 
-    /// <inheritdoc />
-    public abstract void Initialize();
-
-    /// <inheritdoc />
-    public abstract void Dispose();
+    protected virtual bool CanMarkAsSuccess()
+    {
+        return this.Status is QuestStatus.Active or QuestStatus.Sleeping;
+    }
 
     /// <summary>
     /// Invocator for the interface <see cref="INotifyPropertyChanged"/>.
@@ -141,5 +157,10 @@ public abstract class QuestChildNode : IQuestChildNode
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected virtual void OnStatusChanged(QuestStatus newStatus)
+    {
+        // Empty
     }
 }

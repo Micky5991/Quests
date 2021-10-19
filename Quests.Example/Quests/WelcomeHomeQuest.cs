@@ -14,7 +14,12 @@ public class WelcomeHomeQuest : QuestRootNode
                             new QuestSequenceNode(this)
                             {
                                 new EnterZoneTask(this, 5, eventAggregator),
-                                new KillTask(this, eventAggregator),
+                                new QuestParallelNode(this)
+                                {
+                                    new StayAliveTask(this, eventAggregator),
+                                    new KillTask(this, eventAggregator),
+                                },
+                                new LeaveZoneTask(this, 5, eventAggregator),
                             });
     }
 }

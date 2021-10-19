@@ -5,13 +5,13 @@ namespace Micky5991.Quests.Example.Events
 {
     public class KillEvent : EventBase
     {
-        public Player Killer { get; }
+        public Entity Killer { get; }
 
         public Entity Victim { get; }
 
         public int Weapon { get; }
 
-        public KillEvent(Player killer, Entity victim, int weapon)
+        public KillEvent(Entity killer, Entity victim, int weapon)
         {
             this.Killer = killer;
             this.Victim = victim;

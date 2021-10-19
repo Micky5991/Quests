@@ -19,7 +19,7 @@ public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
     /// <inheritdoc />
     public IImmutableList<IQuestChildNode> ChildNodes { get; private set; } = ImmutableList<IQuestChildNode>.Empty;
 
-    public void Add(IQuestChildNode childNode)
+    public virtual void Add(IQuestChildNode childNode)
     {
         this.ChildNodes = this.ChildNodes.Add(childNode);
     }
@@ -27,6 +27,8 @@ public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
     /// <inheritdoc />
     public override void Initialize()
     {
+        base.Initialize();
+
         foreach (var childNode in this.ChildNodes)
         {
             childNode.Initialize();

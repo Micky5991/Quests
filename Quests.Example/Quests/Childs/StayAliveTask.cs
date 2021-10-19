@@ -1,36 +1,34 @@
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
+using Micky5991.Quests.Example.Entities;
 using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Example.Quests.Childs;
 
-public class EnterZoneTask : QuestTaskNode
+public class StayAliveTask : QuestConditonNode
 {
-    private readonly int zoneId;
-
     private readonly IEventAggregator eventAggregator;
 
-    public EnterZoneTask(IQuestRootNode rootNode, int zoneId, IEventAggregator eventAggregator)
+    public StayAliveTask(IQuestRootNode rootNode, IEventAggregator eventAggregator)
         : base(rootNode)
     {
-        this.zoneId = zoneId;
         this.eventAggregator = eventAggregator;
-        this.Title = $"Reach zone {zoneId}";
+        this.Title = "Stay alive during the attack.";
     }
 
     protected override IEnumerable<ISubscription> GetEventSubscriptions()
     {
-        yield return this.eventAggregator.Subscribe<EnterZoneEvent>(this.OnEnterZoneEvent);
+        yield return this.eventAggregator.Subscribe<KillEvent>(this.OnEntityKill);
     }
 
-    private void OnEnterZoneEvent(EnterZoneEvent eventdata)
+    private void OnEntityKill(KillEvent eventdata)
     {
-        if (eventdata.ZoneId != this.zoneId)
+        if (eventdata.Victim is not Player)
         {
             return;
         }
 
-        this.MarkAsSuccess();
+        this.MarkAsFailure();
     }
 }
