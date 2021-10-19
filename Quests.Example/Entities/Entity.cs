@@ -30,7 +30,7 @@ namespace Micky5991.Quests.Example.Entities
 
             void PrintQuestGoal(IQuestChildNode childNode, int depth)
             {
-                stringBuilder.AppendLine($"{new string('-', depth)} {childNode.Title} ({childNode.Status.ToString()})");
+                stringBuilder.AppendLine($"{new string('|', depth)} {childNode.Title} ({childNode.Status.ToString()})");
 
                 if (childNode is not IQuestCompositeNode compositeNode)
                 {

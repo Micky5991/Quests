@@ -46,10 +46,16 @@ namespace Micky5991.Quests.Example
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
-            this.eventAggregator.Publish(new KillEvent(enemy, player, 1));
+            this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
+            this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
 
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
             this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
+            this.eventAggregator.Publish(new KillEvent(player, enemy, 1));
+
+            this.eventAggregator.Publish(new KillEvent(enemy, player, 1));
+
+            this.eventAggregator.Publish(new EnterZoneEvent(player, 4));
 
             player.PrintQuestGoals();
         }
