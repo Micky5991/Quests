@@ -24,6 +24,8 @@ public abstract class QuestTaskNode : QuestChildNode, IQuestTaskNode
     public override void Dispose()
     {
         this.DetachEventListeners();
+
+        base.Dispose();
     }
 
     /// <summary>
