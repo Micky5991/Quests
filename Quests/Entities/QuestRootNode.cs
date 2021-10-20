@@ -48,6 +48,28 @@ public abstract class QuestRootNode : QuestNode, IQuestRootNode
         this.AttachChildNodeWatchers();
     }
 
+    /// <inheritdoc />
+    protected override void OnStatusChanged(QuestStatus newStatus)
+    {
+        Guard.Argument(newStatus, nameof(newStatus)).Defined();
+
+        switch (newStatus)
+        {
+            case QuestStatus.Sleeping:
+            case QuestStatus.Active:
+            case QuestStatus.Failure:
+                this.ChildNode?.SetStatus(newStatus);
+
+                break;
+
+            case QuestStatus.Success:
+                // Ignore
+                break;
+        }
+
+        base.OnStatusChanged(newStatus);
+    }
+
     /// <summary>
     /// Sets the Child Quest object to the given <paramref name="childNode"/>.
     /// </summary>
