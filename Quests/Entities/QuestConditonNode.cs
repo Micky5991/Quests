@@ -31,15 +31,17 @@ public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
     }
 
     /// <inheritdoc />
-    public override bool CanMarkAsSleeping()
+    public override bool CanSetToStatus(QuestStatus newStatus)
     {
-        return this.Status is QuestStatus.Success || base.CanMarkAsSleeping();
-    }
+        switch (newStatus)
+        {
+            case QuestStatus.Sleeping:
+            case QuestStatus.Failure:
+                return this.Status == QuestStatus.Success || base.CanSetToStatus(newStatus);
 
-    /// <inheritdoc />
-    public override bool CanMarkAsFailure()
-    {
-        return this.Status == QuestStatus.Success || base.CanMarkAsFailure();
+            default:
+                return base.CanSetToStatus(newStatus);
+        }
     }
 
     /// <summary>

@@ -91,22 +91,14 @@ public abstract class QuestRootNode : QuestNode, IQuestRootNode
                 switch (this.ChildNode.Status)
                 {
                     case QuestStatus.Active:
-                        this.MarkAsActive();
-
-                        break;
-
                     case QuestStatus.Sleeping:
-                        this.MarkAsSleeping();
+                    case QuestStatus.Failure:
+                        this.SetStatus(this.ChildNode.Status);
 
                         break;
 
                     case QuestStatus.Success:
                         this.MarkAsSuccess();
-
-                        break;
-
-                    case QuestStatus.Failure:
-                        this.MarkAsFailure();
 
                         break;
                 }

@@ -1,5 +1,6 @@
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
+using Micky5991.Quests.Enums;
 using Micky5991.Quests.Example.Entities;
 using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;
@@ -29,6 +30,6 @@ public class StayAliveTask : QuestConditonNode
             return;
         }
 
-        this.MarkAsFailure();
+        this.SetStatus(QuestStatus.Failure);
     }
 }

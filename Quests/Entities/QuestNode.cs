@@ -77,60 +77,44 @@ public abstract class QuestNode : IQuestNode
     }
 
     /// <inheritdoc />
+    public void SetStatus(QuestStatus newStatus)
+    {
+        Guard.Argument(newStatus, nameof(newStatus)).Defined().NotEqual(QuestStatus.Success);
+
+        if (this.CanSetToStatus(newStatus) == false)
+        {
+            return;
+        }
+
+        this.Status = newStatus;
+    }
+
+    /// <inheritdoc />
+    public virtual bool CanSetToStatus(QuestStatus newStatus)
+    {
+        switch (newStatus)
+        {
+            case QuestStatus.Sleeping:
+                return this.Status == QuestStatus.Active;
+
+            case QuestStatus.Active:
+                return this.Status == QuestStatus.Sleeping;
+
+            case QuestStatus.Success:
+                return false;
+
+            case QuestStatus.Failure:
+                return this.Status is QuestStatus.Active or QuestStatus.Sleeping;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newStatus), newStatus, null);
+        }
+    }
+
+    /// <inheritdoc />
     public virtual void Dispose()
     {
         this.Disposed = true;
-    }
-
-    /// <inheritdoc />
-    public virtual void MarkAsActive()
-    {
-        if (this.CanMarkAsActive() == false)
-        {
-            return;
-        }
-
-        this.Status = QuestStatus.Active;
-    }
-
-    /// <inheritdoc />
-    public virtual void MarkAsSleeping()
-    {
-        if (this.CanMarkAsSleeping() == false)
-        {
-            return;
-        }
-
-        this.Status = QuestStatus.Sleeping;
-    }
-
-    /// <inheritdoc />
-    public virtual void MarkAsFailure()
-    {
-        if (this.CanMarkAsFailure() == false)
-        {
-            return;
-        }
-
-        this.Status = QuestStatus.Failure;
-    }
-
-    /// <inheritdoc />
-    public virtual bool CanMarkAsActive()
-    {
-        return this.Status == QuestStatus.Sleeping;
-    }
-
-    /// <inheritdoc />
-    public virtual bool CanMarkAsSleeping()
-    {
-        return this.Status == QuestStatus.Active;
-    }
-
-    /// <inheritdoc />
-    public virtual bool CanMarkAsFailure()
-    {
-        return this.Status is QuestStatus.Active or QuestStatus.Sleeping;
     }
 
     /// <summary>

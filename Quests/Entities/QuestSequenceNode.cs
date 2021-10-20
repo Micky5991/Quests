@@ -48,10 +48,8 @@ public class QuestSequenceNode : QuestCompositeNode
         switch (newStatus)
         {
             case QuestStatus.Failure:
-                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsFailure()))
-                {
-                    childNode.MarkAsFailure();
-                }
+            case QuestStatus.Sleeping:
+                this.SetStatusOfChildNodes(newStatus);
 
                 break;
 
@@ -59,21 +57,16 @@ public class QuestSequenceNode : QuestCompositeNode
                 this.MarkNextChildNodeAsActive();
 
                 break;
-
-            case QuestStatus.Sleeping:
-                this.MarkAllChildNodesAsSleeping();
-
-                break;
         }
 
         base.OnStatusChanged(newStatus);
     }
 
-    private void MarkAllChildNodesAsSleeping()
+    private void SetStatusOfChildNodes(QuestStatus newStatus)
     {
-        foreach (var activeNode in this.ChildNodes.Where(x => x.CanMarkAsSleeping()))
+        foreach (var activeNode in this.ChildNodes.Where(x => x.CanSetToStatus(newStatus)))
         {
-            activeNode.MarkAsSleeping();
+            activeNode.SetStatus(newStatus);
         }
     }
 
@@ -81,12 +74,12 @@ public class QuestSequenceNode : QuestCompositeNode
     {
         if (this.ChildNodes.Any(x => x.Status == QuestStatus.Failure))
         {
-            this.MarkAsFailure();
+            this.SetStatus(QuestStatus.Failure);
 
             return;
         }
 
-        this.MarkAllChildNodesAsSleeping();
+        this.SetStatusOfChildNodes(QuestStatus.Sleeping);
 
         var firstUncompletedQuest = this.ChildNodes.FirstOrDefault(x => x.Finished == false);
         if (firstUncompletedQuest == null)
@@ -96,7 +89,7 @@ public class QuestSequenceNode : QuestCompositeNode
             return;
         }
 
-        firstUncompletedQuest.MarkAsActive();
+        firstUncompletedQuest.SetStatus(QuestStatus.Active);
     }
 
     private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)

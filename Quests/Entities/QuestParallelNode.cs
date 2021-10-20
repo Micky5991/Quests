@@ -51,25 +51,11 @@ public class QuestParallelNode : QuestCompositeNode
         switch (newStatus)
         {
             case QuestStatus.Active:
-                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsActive()))
-                {
-                    childNode.MarkAsActive();
-                }
-
-                break;
-
             case QuestStatus.Sleeping:
-                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsSleeping()))
-                {
-                    childNode.MarkAsSleeping();
-                }
-
-                break;
-
             case QuestStatus.Failure:
-                foreach (var childNode in this.ChildNodes.Where(x => x.CanMarkAsFailure()))
+                foreach (var childNode in this.ChildNodes.Where(x => x.CanSetToStatus(newStatus)))
                 {
-                    childNode.MarkAsFailure();
+                    childNode.SetStatus(newStatus);
                 }
 
                 break;
@@ -91,7 +77,7 @@ public class QuestParallelNode : QuestCompositeNode
         switch (e.PropertyName)
         {
             case nameof(IQuestChildNode.Status) when childNode.Status == QuestStatus.Failure:
-                this.MarkAsFailure();
+                this.SetStatus(QuestStatus.Failure);
 
                 break;
 

@@ -37,35 +37,16 @@ public interface IQuestNode : INotifyPropertyChanged, IDisposable
     public void Initialize();
 
     /// <summary>
-    /// Checks if the current node can be marked as active.
+    /// Sets the Status of this quest to the given <paramref name="newStatus"/>.
     /// </summary>
-    /// <returns>Returns true if this node can be marked as active.</returns>
-    public bool CanMarkAsActive();
+    /// <param name="newStatus">New status this quest should reach.</param>
+    /// <exception cref="ArgumentNullException">Success can only be set by the quest itself.</exception>
+    public void SetStatus(QuestStatus newStatus);
 
     /// <summary>
-    /// Checks if the current node can be marked as sleeping.
+    /// Checks if this quest could reach the status provided in <paramref name="newStatus"/>.
     /// </summary>
-    /// <returns>Returns true if this node can be marked as sleeping.</returns>
-    public bool CanMarkAsSleeping();
-
-    /// <summary>
-    /// Checks if the current node can be marked as failure.
-    /// </summary>
-    /// <returns>Returns true if this node can be marked as failure.</returns>
-    public bool CanMarkAsFailure();
-
-    /// <summary>
-    /// Changes the status of this node to active.
-    /// </summary>
-    public void MarkAsActive();
-
-    /// <summary>
-    /// Changes the status of this node to sleeping.
-    /// </summary>
-    public void MarkAsSleeping();
-
-    /// <summary>
-    /// Changes the status of this node to failure.
-    /// </summary>
-    public void MarkAsFailure();
+    /// <param name="newStatus">New status this quest should reach.</param>
+    /// <returns>true if the status can be set, false otherwise.</returns>
+    public bool CanSetToStatus(QuestStatus newStatus);
 }
