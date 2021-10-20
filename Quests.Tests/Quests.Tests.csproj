@@ -4,20 +4,26 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
-
+        <LangVersion>10</LangVersion>
         <AssemblyName>Micky5991.Quests.Tests</AssemblyName>
-
         <RootNamespace>Micky5991.Quests.Tests</RootNamespace>
-
         <TargetFrameworks>net5.0;net6.0;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.1.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[3.1.0, 6.0.0)" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="[3.1.0, 6.0.0)" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
         <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
         <PackageReference Include="coverlet.collector" Version="3.1.0" />
+        <PackageReference Include="Serilog" Version="2.10.0" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Quests\Quests.csproj" />
     </ItemGroup>
 
 </Project>
