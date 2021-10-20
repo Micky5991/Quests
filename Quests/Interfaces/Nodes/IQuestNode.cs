@@ -27,7 +27,45 @@ public interface IQuestNode : INotifyPropertyChanged, IDisposable
     public bool Finished { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the quest has been disposed.
+    /// </summary>
+    public bool Disposed { get; }
+
+    /// <summary>
     /// Prepares the quest and executes actions needed to use this <see cref="IQuestNode"/>.
     /// </summary>
     public void Initialize();
+
+    /// <summary>
+    /// Checks if the current node can be marked as active.
+    /// </summary>
+    /// <returns>Returns true if this node can be marked as active.</returns>
+    public bool CanMarkAsActive();
+
+    /// <summary>
+    /// Checks if the current node can be marked as sleeping.
+    /// </summary>
+    /// <returns>Returns true if this node can be marked as sleeping.</returns>
+    public bool CanMarkAsSleeping();
+
+    /// <summary>
+    /// Checks if the current node can be marked as failure.
+    /// </summary>
+    /// <returns>Returns true if this node can be marked as failure.</returns>
+    public bool CanMarkAsFailure();
+
+    /// <summary>
+    /// Changes the status of this node to active.
+    /// </summary>
+    public void MarkAsActive();
+
+    /// <summary>
+    /// Changes the status of this node to sleeping.
+    /// </summary>
+    public void MarkAsSleeping();
+
+    /// <summary>
+    /// Changes the status of this node to failure.
+    /// </summary>
+    public void MarkAsFailure();
 }

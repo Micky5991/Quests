@@ -33,7 +33,7 @@ namespace Micky5991.Quests.Services
         /// are available at all times. Quests will be transient.
         /// </summary>
         /// <param name="serviceCollection">List of services to add the service to.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="serviceCollection"/> is null</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="serviceCollection"/> is null.</exception>
         public void AddQuestsToServiceCollection(IServiceCollection serviceCollection)
         {
             Guard.Argument(serviceCollection, nameof(serviceCollection)).NotNull();

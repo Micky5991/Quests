@@ -1,5 +1,4 @@
 using Dawn;
-using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Entities;
 

@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Dawn;
 using JetBrains.Annotations;
 using Micky5991.Quests.Enums;
@@ -10,54 +9,8 @@ namespace Micky5991.Quests.Entities;
 
 /// <inheritdoc cref="IQuestRootNode"/>
 [PublicAPI]
-public abstract class QuestRootNode : IQuestRootNode
+public abstract class QuestRootNode : QuestNode, IQuestRootNode
 {
-    private string title = string.Empty;
-
-    private QuestStatus status = QuestStatus.Sleeping;
-
-    /// <inheritdoc />
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    /// <inheritdoc />
-    public string Title
-    {
-        get => this.title;
-        protected set
-        {
-            Guard.Argument(value, nameof(value)).NotNull();
-
-            if (this.title == value)
-            {
-                return;
-            }
-
-            this.title = value;
-            this.OnPropertyChanged();
-        }
-    }
-
-    /// <inheritdoc />
-    public QuestStatus Status
-    {
-        get => this.status;
-        protected set
-        {
-            Guard.Argument(value, nameof(value)).Defined();
-
-            if (this.status == value)
-            {
-                return;
-            }
-
-            this.status = value;
-            this.OnPropertyChanged();
-        }
-    }
-
-    /// <inheritdoc />
-    public bool Finished => this.Status == QuestStatus.Failure || this.Status == QuestStatus.Success;
-
     /// <inheritdoc />
     public IImmutableDictionary<string, object> Blackboard { get; set; } = ImmutableDictionary<string, object>.Empty;
 
@@ -68,24 +21,31 @@ public abstract class QuestRootNode : IQuestRootNode
     public IQuestChildNode? ChildNode { get; private set; }
 
     /// <inheritdoc />
-    public virtual void Dispose()
+    public override void Dispose()
     {
+        if (this.Disposed)
+        {
+            throw new ObjectDisposedException("Quest has already been disposed.");
+        }
+
         this.ChildNode?.Dispose();
+        this.ChildNode = null;
+
+        base.Dispose();
     }
 
     /// <inheritdoc />
-    public virtual void Initialize()
+    public override void Initialize()
     {
+        base.Initialize();
+
         if (this.ChildNode == null)
         {
             return;
         }
 
         this.ChildNode.Initialize();
-
         this.AttachChildNodeWatchers();
-
-        this.ChildNode.MarkAsActive();
     }
 
     /// <summary>
@@ -103,16 +63,6 @@ public abstract class QuestRootNode : IQuestRootNode
         }
 
         this.ChildNode = childNode;
-    }
-
-    /// <summary>
-    /// Invocator for the interface <see cref="INotifyPropertyChanged"/>.
-    /// </summary>
-    /// <param name="propertyName">Name of the property that called this method.</param>
-    [NotifyPropertyChangedInvocator]
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     private void AttachChildNodeWatchers()
@@ -138,7 +88,28 @@ public abstract class QuestRootNode : IQuestRootNode
         switch (e.PropertyName)
         {
             case nameof(IQuestChildNode.Status):
-                this.Status = this.ChildNode.Status;
+                switch (this.ChildNode.Status)
+                {
+                    case QuestStatus.Active:
+                        this.MarkAsActive();
+
+                        break;
+
+                    case QuestStatus.Sleeping:
+                        this.MarkAsSleeping();
+
+                        break;
+
+                    case QuestStatus.Success:
+                        this.MarkAsSuccess();
+
+                        break;
+
+                    case QuestStatus.Failure:
+                        this.MarkAsFailure();
+
+                        break;
+                }
 
                 break;
         }
