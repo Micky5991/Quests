@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Dawn;
 using JetBrains.Annotations;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
@@ -45,6 +46,8 @@ public class QuestParallelNode : QuestCompositeNode
     /// <inheritdoc />
     protected override void OnStatusChanged(QuestStatus newStatus)
     {
+        Guard.Argument(newStatus, nameof(newStatus)).Defined();
+
         switch (newStatus)
         {
             case QuestStatus.Active:
@@ -77,6 +80,9 @@ public class QuestParallelNode : QuestCompositeNode
 
     private void OnChildNodePropertyChanged(object sender, PropertyChangedEventArgs e)
     {
+        Guard.Argument(sender, nameof(sender)).NotNull();
+        Guard.Argument(e, nameof(e)).NotNull();
+
         if (sender is not IQuestChildNode childNode || this.ChildNodes.Contains(childNode) == false)
         {
             return;

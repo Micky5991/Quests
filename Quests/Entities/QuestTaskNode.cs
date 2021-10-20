@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Dawn;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
@@ -34,6 +35,8 @@ public abstract class QuestTaskNode : QuestChildNode, IQuestTaskNode
     /// <inheritdoc />
     protected override void OnStatusChanged(QuestStatus newStatus)
     {
+        Guard.Argument(newStatus, nameof(newStatus)).Defined();
+
         switch (newStatus)
         {
             case QuestStatus.Active:

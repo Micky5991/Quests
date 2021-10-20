@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Dawn;
 using JetBrains.Annotations;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
@@ -20,6 +21,8 @@ public abstract class QuestChildNode : IQuestChildNode
     /// <param name="rootNode">Reference to root node.</param>
     public QuestChildNode(IQuestRootNode rootNode)
     {
+        Guard.Argument(rootNode, nameof(rootNode)).NotNull();
+
         this.RootNode = rootNode;
     }
 
@@ -32,6 +35,8 @@ public abstract class QuestChildNode : IQuestChildNode
         get => this.title;
         protected set
         {
+            Guard.Argument(value, nameof(value)).NotNull();
+
             if (this.title == value)
             {
                 return;
@@ -48,6 +53,8 @@ public abstract class QuestChildNode : IQuestChildNode
         get => this.status;
         private set
         {
+            Guard.Argument(value, nameof(value)).Defined();
+
             if (this.status == value)
             {
                 return;
@@ -169,6 +176,7 @@ public abstract class QuestChildNode : IQuestChildNode
     /// Will be called when the status of this node has been changed.
     /// </summary>
     /// <param name="newStatus">New status of this node.</param>
+    /// <exception cref="ArgumentException">Value <paramref name="newStatus"/> is not defined in <see cref="QuestStatus"/>.</exception>
     protected virtual void OnStatusChanged(QuestStatus newStatus)
     {
         // Empty

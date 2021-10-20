@@ -12,11 +12,13 @@ public interface IQuestNode : INotifyPropertyChanged, IDisposable
     /// <summary>
     /// Gets the current, changing title of this quest.
     /// </summary>
+    /// <exception cref="ArgumentNullException">Value is null.</exception>
     public string Title { get; }
 
     /// <summary>
     /// Gets the current, changing status of this quest.
     /// </summary>
+    /// <exception cref="ArgumentException">Value is not defined inside <see cref="QuestStatus"/>.</exception>
     public QuestStatus Status { get; }
 
     /// <summary>

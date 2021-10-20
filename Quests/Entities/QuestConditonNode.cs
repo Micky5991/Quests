@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Dawn;
 using JetBrains.Annotations;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Enums;
@@ -50,6 +51,8 @@ public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
     /// <inheritdoc />
     protected override void OnStatusChanged(QuestStatus newStatus)
     {
+        Guard.Argument(newStatus, nameof(newStatus)).Defined();
+
         switch (newStatus)
         {
             case QuestStatus.Active:

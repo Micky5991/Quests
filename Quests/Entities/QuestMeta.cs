@@ -1,3 +1,6 @@
+using Dawn;
+using Micky5991.Quests.Interfaces.Nodes;
+
 namespace Micky5991.Quests.Entities;
 
 /// <summary>
@@ -11,6 +14,8 @@ public class QuestMeta
     /// <param name="type">Implementation type of this quest.</param>
     public QuestMeta(Type type)
     {
+        Guard.Argument(type, nameof(type)).NotNull();
+
         this.Type = type;
     }
 

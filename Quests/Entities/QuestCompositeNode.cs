@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Dawn;
 using JetBrains.Annotations;
 using Micky5991.Quests.Interfaces.Nodes;
 
@@ -25,8 +26,11 @@ public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
     /// Adds a node to the current quest tree.
     /// </summary>
     /// <param name="childNode">New child that should be added to this tree.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="childNode"/> is null.</exception>
     public virtual void Add(IQuestChildNode childNode)
     {
+        Guard.Argument(childNode, nameof(childNode)).NotNull();
+
         this.ChildNodes = this.ChildNodes.Add(childNode);
     }
 

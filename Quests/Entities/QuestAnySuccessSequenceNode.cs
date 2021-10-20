@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Dawn;
 using JetBrains.Annotations;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
@@ -25,6 +26,8 @@ public class QuestAnySuccessSequenceNode : QuestCompositeNode
     /// <inheritdoc />
     public override void Add(IQuestChildNode childNode)
     {
+        Guard.Argument(childNode, nameof(childNode)).NotNull();
+
         base.Add(childNode);
 
         childNode.PropertyChanged += this.OnChildNodeOnPropertyChanged;
@@ -33,6 +36,8 @@ public class QuestAnySuccessSequenceNode : QuestCompositeNode
     /// <inheritdoc />
     protected override void OnStatusChanged(QuestStatus newStatus)
     {
+        Guard.Argument(newStatus, nameof(newStatus)).Defined();
+
         switch (newStatus)
         {
             case QuestStatus.Failure:
@@ -96,6 +101,9 @@ public class QuestAnySuccessSequenceNode : QuestCompositeNode
 
     private void OnChildNodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
+        Guard.Argument(sender, nameof(sender)).NotNull();
+        Guard.Argument(e, nameof(e)).NotNull();
+
         switch (e.PropertyName)
         {
             case nameof(IQuestChildNode.Status)

@@ -25,6 +25,8 @@ public abstract class QuestRootNode : IQuestRootNode
         get => this.title;
         protected set
         {
+            Guard.Argument(value, nameof(value)).NotNull();
+
             if (this.title == value)
             {
                 return;
@@ -41,6 +43,8 @@ public abstract class QuestRootNode : IQuestRootNode
         get => this.status;
         protected set
         {
+            Guard.Argument(value, nameof(value)).Defined();
+
             if (this.status == value)
             {
                 return;
@@ -123,6 +127,9 @@ public abstract class QuestRootNode : IQuestRootNode
 
     private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
+        Guard.Argument(sender, nameof(sender)).NotNull();
+        Guard.Argument(e, nameof(e)).NotNull();
+
         if (this.ChildNode == null)
         {
             return;
