@@ -5,5 +5,4 @@ namespace Micky5991.Quests.Interfaces.Nodes;
 /// </summary>
 public interface IQuestTaskNode : IQuestChildNode
 {
-
 }
