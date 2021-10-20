@@ -4,15 +4,21 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Micky5991.Quests.Services;
 
+/// <inheritdoc />
 public class QuestFactory : IQuestFactory
 {
     private readonly IServiceProvider serviceProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestFactory"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">Service provider needed to created quests.</param>
     public QuestFactory(IServiceProvider serviceProvider)
     {
         this.serviceProvider = serviceProvider;
     }
 
+    /// <inheritdoc />
     public IQuestRootNode BuildQuest<T>()
         where T : IQuestRootNode
     {
