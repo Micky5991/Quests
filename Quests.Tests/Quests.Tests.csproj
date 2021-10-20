@@ -9,7 +9,7 @@
 
         <RootNamespace>Micky5991.Quests.Tests</RootNamespace>
 
-        <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net5.0;net6.0;netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
