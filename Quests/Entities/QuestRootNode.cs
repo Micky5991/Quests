@@ -84,11 +84,6 @@ public abstract class QuestRootNode : IQuestRootNode
         this.ChildNode.MarkAsActive();
     }
 
-    public IImmutableList<IQuestTaskNode> GetQuestTasks(Func<IQuestTaskNode>? selector = null)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <summary>
     /// Sets the Child Quest object to the given <paramref name="childNode"/>.
     /// </summary>

@@ -25,6 +25,10 @@ public abstract class QuestTaskNode : QuestChildNode, IQuestTaskNode
         this.DetachEventListeners();
     }
 
+    /// <summary>
+    /// Calls to this method trigger a subscription of all needed events for this quest tree.
+    /// </summary>
+    /// <returns>List of created subscriptions.</returns>
     protected abstract IEnumerable<ISubscription> GetEventSubscriptions();
 
     /// <inheritdoc />

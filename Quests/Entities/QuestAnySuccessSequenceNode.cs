@@ -5,9 +5,18 @@ using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Entities;
 
+/// <summary>
+/// Node type that tries one node after another. It will succeed as soon as the first child node signals success.
+/// When all child quests fail or no child quests are available, this node will fail.
+/// </summary>
+[PublicAPI]
 public class QuestAnySuccessSequenceNode : QuestCompositeNode
 {
-    public QuestAnySuccessSequenceNode([NotNull] IQuestRootNode rootNode)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestAnySuccessSequenceNode"/> class.
+    /// </summary>
+    /// <param name="rootNode">Root node of this quest tree.</param>
+    public QuestAnySuccessSequenceNode(IQuestRootNode rootNode)
         : base(rootNode)
     {
         this.Title = "ANY SUCCESS NODE";
@@ -19,6 +28,33 @@ public class QuestAnySuccessSequenceNode : QuestCompositeNode
         base.Add(childNode);
 
         childNode.PropertyChanged += this.OnChildNodeOnPropertyChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnStatusChanged(QuestStatus newStatus)
+    {
+        switch (newStatus)
+        {
+            case QuestStatus.Failure:
+                foreach (var childNode in this.ChildNodes)
+                {
+                    childNode.MarkAsFailure();
+                }
+
+                break;
+
+            case QuestStatus.Active:
+                this.MarkNextChildNodeAsActive();
+
+                break;
+
+            case QuestStatus.Sleeping:
+                this.MarkAllChildsAsSleeping();
+
+                break;
+        }
+
+        base.OnStatusChanged(newStatus);
     }
 
     private void MarkNextChildNodeAsActive()
@@ -74,32 +110,5 @@ public class QuestAnySuccessSequenceNode : QuestCompositeNode
 
                 break;
         }
-    }
-
-    /// <inheritdoc />
-    protected override void OnStatusChanged(QuestStatus newStatus)
-    {
-        switch (newStatus)
-        {
-            case QuestStatus.Failure:
-                foreach (var childNode in this.ChildNodes)
-                {
-                    childNode.MarkAsFailure();
-                }
-
-                break;
-
-            case QuestStatus.Active:
-                this.MarkNextChildNodeAsActive();
-
-                break;
-
-            case QuestStatus.Sleeping:
-                this.MarkAllChildsAsSleeping();
-
-                break;
-        }
-
-        base.OnStatusChanged(newStatus);
     }
 }

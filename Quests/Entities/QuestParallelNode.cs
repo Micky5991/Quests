@@ -1,11 +1,22 @@
 using System.ComponentModel;
+using JetBrains.Annotations;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Entities;
 
+/// <summary>
+/// Type that holds multiple child quests and activates them all at the same time. When all child nodes signal success,
+/// this node will change to success. When any child node fails, all remaining child nodes will fail and this node will
+/// be marked as failure.
+/// </summary>
+[PublicAPI]
 public class QuestParallelNode : QuestCompositeNode
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestParallelNode"/> class.
+    /// </summary>
+    /// <param name="rootNode">Root quest node of this quest tree.</param>
     public QuestParallelNode(IQuestRootNode rootNode)
         : base(rootNode)
     {

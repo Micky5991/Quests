@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using JetBrains.Annotations;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
@@ -8,6 +9,7 @@ namespace Micky5991.Quests.Entities;
 /// <summary>
 /// Type that has always success status, unless it fails explicitly.
 /// </summary>
+[PublicAPI]
 public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
 {
     private IImmutableSet<ISubscription> eventSubscriptions = ImmutableHashSet<ISubscription>.Empty;
@@ -39,6 +41,10 @@ public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
         return this.Status == QuestStatus.Success || base.CanMarkAsFailure();
     }
 
+    /// <summary>
+    /// Calls to this method trigger a subscription of all needed events for this quest tree.
+    /// </summary>
+    /// <returns>List of created subscriptions.</returns>
     protected abstract IEnumerable<ISubscription> GetEventSubscriptions();
 
     /// <inheritdoc />

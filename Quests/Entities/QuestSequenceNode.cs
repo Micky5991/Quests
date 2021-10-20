@@ -4,8 +4,16 @@ using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Entities;
 
+/// <summary>
+/// Type that will execute all nodes one after another. When the first child node fails, this node will mark all other
+/// nodes as failure and itself. When all nodes complete successfully, it will finish successfully too.
+/// </summary>
 public class QuestSequenceNode : QuestCompositeNode
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestSequenceNode"/> class.
+    /// </summary>
+    /// <param name="rootNode">Root quest node of this quest tree.</param>
     public QuestSequenceNode(IQuestRootNode rootNode)
         : base(rootNode)
     {

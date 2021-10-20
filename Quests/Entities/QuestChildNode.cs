@@ -133,7 +133,9 @@ public abstract class QuestChildNode : IQuestChildNode
         return this.Status is QuestStatus.Active or QuestStatus.Sleeping;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Marks the current node as successful.
+    /// </summary>
     protected virtual void MarkAsSuccess()
     {
         if (this.CanMarkAsSuccess() == false)
@@ -144,6 +146,10 @@ public abstract class QuestChildNode : IQuestChildNode
         this.Status = QuestStatus.Success;
     }
 
+    /// <summary>
+    /// Indicates if the current node can be marked as success.
+    /// </summary>
+    /// <returns>Returns true if the node can be marked as success.</returns>
     protected virtual bool CanMarkAsSuccess()
     {
         return this.Status is QuestStatus.Active or QuestStatus.Sleeping;
@@ -159,6 +165,10 @@ public abstract class QuestChildNode : IQuestChildNode
         this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    /// <summary>
+    /// Will be called when the status of this node has been changed.
+    /// </summary>
+    /// <param name="newStatus">New status of this node.</param>
     protected virtual void OnStatusChanged(QuestStatus newStatus)
     {
         // Empty
