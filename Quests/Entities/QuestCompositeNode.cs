@@ -55,6 +55,8 @@ public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
         {
             childNode.Dispose();
         }
+
+        base.Dispose();
     }
 
     /// <inheritdoc />
