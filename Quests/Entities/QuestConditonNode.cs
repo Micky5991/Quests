@@ -37,6 +37,7 @@ public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
         {
             case QuestStatus.Sleeping:
             case QuestStatus.Failure:
+            case QuestStatus.Active:
                 return this.Status == QuestStatus.Success || base.CanSetToStatus(newStatus);
 
             default:
