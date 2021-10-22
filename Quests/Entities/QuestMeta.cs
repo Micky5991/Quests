@@ -1,4 +1,5 @@
 using Dawn;
+using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Entities;
 
@@ -14,6 +15,11 @@ public class QuestMeta
     public QuestMeta(Type type)
     {
         Guard.Argument(type, nameof(type)).NotNull();
+
+        if (type.GetInterfaces().Contains(typeof(IQuestRootNode)) == false)
+        {
+            throw new ArgumentException($"The type {type} does not implement {typeof(IQuestRootNode)}.");
+        }
 
         this.Type = type;
     }

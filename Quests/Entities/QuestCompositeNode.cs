@@ -30,6 +30,17 @@ public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
     public virtual void Add(IQuestChildNode childNode)
     {
         Guard.Argument(childNode, nameof(childNode)).NotNull();
+        Guard.Disposal(childNode.Disposed, nameof(childNode));
+
+        if (childNode.RootNode != this.RootNode)
+        {
+            throw new ArgumentException($"Could not add child node {childNode} to composite. Wrong root node.");
+        }
+
+        if (this.Initialized)
+        {
+            childNode.Initialize();
+        }
 
         this.ChildNodes = this.ChildNodes.Add(childNode);
     }

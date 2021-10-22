@@ -41,6 +41,9 @@ public abstract class QuestNode : IQuestNode
     public bool Finished => this.Status is QuestStatus.Success or QuestStatus.Failure;
 
     /// <inheritdoc />
+    public bool Initialized { get; private set; }
+
+    /// <inheritdoc />
     public bool Disposed { get; private set; }
 
     /// <inheritdoc />
@@ -57,6 +60,7 @@ public abstract class QuestNode : IQuestNode
             }
 
             this.status = value;
+            this.OnStatusChanged(value);
             this.OnPropertyChanged();
         }
     }
@@ -64,16 +68,7 @@ public abstract class QuestNode : IQuestNode
     /// <inheritdoc />
     public virtual void Initialize()
     {
-        this.PropertyChanged += (_, args) =>
-        {
-            switch (args.PropertyName)
-            {
-                case nameof(this.Status):
-                    this.OnStatusChanged(this.Status);
-
-                    break;
-            }
-        };
+        this.Initialized = true;
     }
 
     /// <inheritdoc />

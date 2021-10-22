@@ -19,6 +19,11 @@ public class ExampleQuest : QuestRootNode
         this.Title = title;
     }
 
+    public ExampleQuest(Func<ExampleQuest, IQuestChildNode> setup)
+        : this("Example Quest", setup)
+    {
+    }
+
     public override void Initialize()
     {
         base.Initialize();

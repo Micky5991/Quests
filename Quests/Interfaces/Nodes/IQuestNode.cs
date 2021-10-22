@@ -27,6 +27,11 @@ public interface IQuestNode : INotifyPropertyChanged, IDisposable
     public bool Finished { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the current node has been initialized before.
+    /// </summary>
+    public bool Initialized { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the quest has been disposed.
     /// </summary>
     public bool Disposed { get; }
