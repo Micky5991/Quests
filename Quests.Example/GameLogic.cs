@@ -26,6 +26,7 @@ namespace Micky5991.Quests.Example
             var enemy = new Enemy();
 
             var quest = this.questFactory.BuildQuest<WelcomeHomeQuest>();
+            quest.SetStatus(QuestStatus.Active);
 
             player.AddQuest(quest);
 
