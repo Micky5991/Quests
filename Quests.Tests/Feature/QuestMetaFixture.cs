@@ -34,7 +34,7 @@ public class QuestMetaFixture
     [TestMethod]
     public void TypePropertyWillReturnCorrectValue()
     {
-        var typeValue = typeof(ExampleQuest);
+        var typeValue = typeof(DummyQuest);
         var meta = new QuestMeta(typeValue);
 
         meta.Type.Should().Be(typeValue);

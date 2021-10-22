@@ -20,9 +20,9 @@ public abstract class QuestTestBase
             .BuildServiceProvider();
     }
 
-    protected ExampleQuest CreateExampleQuest(Func<ExampleQuest, IQuestChildNode> setup, bool initialize = true)
+    protected DummyQuest CreateExampleQuest(Func<DummyQuest, IQuestChildNode> setup, bool initialize = true)
     {
-        var quest = new ExampleQuest(setup);
+        var quest = new DummyQuest(setup);
 
         if (initialize)
         {

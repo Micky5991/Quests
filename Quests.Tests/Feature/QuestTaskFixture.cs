@@ -19,7 +19,7 @@ public class QuestTaskFixture : QuestTestBase
 {
     private DummyTask task;
 
-    private ExampleQuest quest;
+    private DummyQuest quest;
 
     private IEventAggregator? eventAggregator;
 

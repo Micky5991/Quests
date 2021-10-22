@@ -20,7 +20,7 @@ public class SingleQuestFixture
 
     private IServiceProvider? serviceProvider;
 
-    private ExampleQuest? quest;
+    private DummyQuest? quest;
 
     private DummyTask ChildNode => (DummyTask) this.quest!.ChildNode!;
 
@@ -34,7 +34,7 @@ public class SingleQuestFixture
 
         this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
 
-        this.quest = new ExampleQuest(QuestTitle, q => new DummyTask(q, this.eventAggregator));
+        this.quest = new DummyQuest(QuestTitle, q => new DummyTask(q, this.eventAggregator));
         this.quest.Initialize();
     }
 

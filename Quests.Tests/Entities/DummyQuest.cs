@@ -4,22 +4,22 @@ using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Tests.Entities;
 
-public class ExampleQuest : QuestRootNode
+public class DummyQuest : QuestRootNode
 {
     public bool Initialized { get; private set; }
 
-    public ExampleQuest(string title, Func<ExampleQuest, IQuestChildNode> setup)
+    public DummyQuest(string title, Func<DummyQuest, IQuestChildNode> setup)
         : this(title)
     {
         this.SetChildQuests(setup(this));
     }
 
-    public ExampleQuest(string title)
+    public DummyQuest(string title)
     {
         this.Title = title;
     }
 
-    public ExampleQuest(Func<ExampleQuest, IQuestChildNode> setup)
+    public DummyQuest(Func<DummyQuest, IQuestChildNode> setup)
         : this("Example Quest", setup)
     {
     }

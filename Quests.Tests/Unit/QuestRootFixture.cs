@@ -19,7 +19,7 @@ public class QuestRootFixture
 
     private IServiceProvider? serviceProvider;
 
-    private ExampleQuest? quest;
+    private DummyQuest? quest;
 
     [TestInitialize]
     public void Setup()
@@ -31,7 +31,7 @@ public class QuestRootFixture
 
         this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
 
-        this.quest = new ExampleQuest(QuestTitle, q => new DummyTask(q, this.eventAggregator));
+        this.quest = new DummyQuest(QuestTitle, q => new DummyTask(q, this.eventAggregator));
         this.quest.Initialize();
     }
 
@@ -59,7 +59,7 @@ public class QuestRootFixture
     [TestMethod]
     public void PassingNullAsQuestNodeThrowsException()
     {
-        Func<ExampleQuest> function = () => new ExampleQuest(QuestTitle, _ => null!);
+        Func<DummyQuest> function = () => new DummyQuest(QuestTitle, _ => null!);
 
         function.Should().Throw<ArgumentNullException>();
     }
@@ -67,7 +67,7 @@ public class QuestRootFixture
     [TestMethod]
     public void InitializingWithoutChildQuestWillJustWork()
     {
-        Func<ExampleQuest> function = () => new ExampleQuest(QuestTitle);
+        Func<DummyQuest> function = () => new DummyQuest(QuestTitle);
 
         function.Should().NotThrow();
     }

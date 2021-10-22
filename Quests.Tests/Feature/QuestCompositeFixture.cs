@@ -19,7 +19,7 @@ public class QuestCompositeFixture : QuestTestBase
 
     private DummyCompositeNode composite;
 
-    private ExampleQuest quest;
+    private DummyQuest quest;
 
     private IEventAggregator? eventAggregator;
 
@@ -137,7 +137,7 @@ public class QuestCompositeFixture : QuestTestBase
     [TestMethod]
     public void AddingChildQuestWithWrongRootNodeWillThrowException()
     {
-        var fakeQuest = new ExampleQuest("FAKE");
+        var fakeQuest = new DummyQuest("FAKE");
 
         var task = new DummyTask(fakeQuest, this.eventAggregator!);
 
