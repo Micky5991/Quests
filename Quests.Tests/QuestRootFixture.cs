@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests.Unit;
+namespace Micky5991.Quests.Tests;
 
 [TestClass]
 public class QuestRootFixture

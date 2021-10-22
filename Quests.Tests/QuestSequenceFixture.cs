@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
 using Micky5991.EventAggregator.Interfaces;
@@ -14,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests.Feature;
+namespace Micky5991.Quests.Tests;
 
 [TestClass]
 public class QuestSequenceFixture : QuestTestBase

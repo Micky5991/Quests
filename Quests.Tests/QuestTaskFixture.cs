@@ -12,12 +12,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests.Feature;
+namespace Micky5991.Quests.Tests;
 
 [TestClass]
-public class QuestConditionTaskFixture : QuestTestBase
+public class QuestTaskFixture : QuestTestBase
 {
-    private DummyConditionTask task;
+    private DummyTask task;
 
     private DummyQuest quest;
 
@@ -37,7 +37,7 @@ public class QuestConditionTaskFixture : QuestTestBase
 
         this.quest = this.CreateExampleQuest(q =>
         {
-            this.task = new DummyConditionTask(q, this.eventAggregator);
+            this.task = new DummyTask(q, this.eventAggregator);
 
             return this.task;
         });
@@ -72,7 +72,8 @@ public class QuestConditionTaskFixture : QuestTestBase
     [TestMethod]
     [DataRow(QuestStatus.Sleeping)]
     [DataRow(QuestStatus.Failure)]
-    public void SubscriptionsWillBeDisposedOnNonSuccessStatus(QuestStatus newStatus)
+    [DataRow(QuestStatus.Success)]
+    public void SubscriptionsWillBeDisposedOnNonActiveStatus(QuestStatus newStatus)
     {
         var subscriptions = new ISubscription[]
         {
@@ -89,8 +90,43 @@ public class QuestConditionTaskFixture : QuestTestBase
     }
 
     [TestMethod]
+    public void SubscriptionsWillNotBeReusedOnStatusChange()
+    {
+        var firstSubscription = new FakeSubscription();
+        var secondSubscription = new FakeSubscription();
+
+        this.task.FakeSubscriptions(new ISubscription[]
+        {
+            firstSubscription,
+        });
+
+        this.quest.SetStatus(QuestStatus.Active);
+        this.quest.SetStatus(QuestStatus.Sleeping);
+
+        this.task.EventSubscriptionAmount.Should().Be(1);
+        firstSubscription.IsDisposed.Should().BeTrue();
+        firstSubscription.DisposeAmount.Should().Be(1);
+
+        this.task.FakeSubscriptions(new ISubscription[]
+        {
+            secondSubscription,
+        });
+
+        this.quest.SetStatus(QuestStatus.Active);
+        this.quest.SetStatus(QuestStatus.Sleeping);
+
+        this.task.EventSubscriptionAmount.Should().Be(2);
+        firstSubscription.IsDisposed.Should().BeTrue();
+        firstSubscription.DisposeAmount.Should().Be(1);
+
+        secondSubscription.IsDisposed.Should().BeTrue();
+        secondSubscription.DisposeAmount.Should().Be(1);
+    }
+
+    [TestMethod]
     [DataRow(QuestStatus.Sleeping)]
     [DataRow(QuestStatus.Failure)]
+    [DataRow(QuestStatus.Active)]
     [DataRow(QuestStatus.Success)]
     public void StatusChangedWillNotTriggerOnSameValue(QuestStatus status)
     {
@@ -118,11 +154,12 @@ public class QuestConditionTaskFixture : QuestTestBase
     }
 
     [TestMethod]
+    [DataRow(QuestStatus.Active, QuestStatus.Sleeping)]
+    [DataRow(QuestStatus.Active, QuestStatus.Success)]
+    [DataRow(QuestStatus.Active, QuestStatus.Failure)]
     [DataRow(QuestStatus.Sleeping, QuestStatus.Active)]
+    [DataRow(QuestStatus.Sleeping, QuestStatus.Success)]
     [DataRow(QuestStatus.Sleeping, QuestStatus.Failure)]
-    [DataRow(QuestStatus.Success, QuestStatus.Sleeping)]
-    [DataRow(QuestStatus.Success, QuestStatus.Active)]
-    [DataRow(QuestStatus.Success, QuestStatus.Failure)]
     public void StatusChangeIsPossible(QuestStatus initialStatus, QuestStatus targetStatus)
     {
         this.task.ForceSetState(initialStatus);
@@ -133,6 +170,11 @@ public class QuestConditionTaskFixture : QuestTestBase
     [DataRow(QuestStatus.Failure, QuestStatus.Success)]
     [DataRow(QuestStatus.Failure, QuestStatus.Sleeping)]
     [DataRow(QuestStatus.Failure, QuestStatus.Active)]
+    [DataRow(QuestStatus.Success, QuestStatus.Success)]
+    [DataRow(QuestStatus.Success, QuestStatus.Sleeping)]
+    [DataRow(QuestStatus.Success, QuestStatus.Active)]
+    [DataRow(QuestStatus.Sleeping, QuestStatus.Sleeping)]
+    [DataRow(QuestStatus.Active, QuestStatus.Active)]
     [DataRow(QuestStatus.Failure, QuestStatus.Failure)]
     [DataRow(QuestStatus.Success, QuestStatus.Success)]
     public void StatusChangeIsNotPossible(QuestStatus initialStatus, QuestStatus targetStatus)

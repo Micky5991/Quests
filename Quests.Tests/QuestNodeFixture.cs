@@ -5,7 +5,7 @@ using Micky5991.Quests.Tests.Entities;
 using Micky5991.Quests.Tests.TestBases;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Micky5991.Quests.Tests.Feature;
+namespace Micky5991.Quests.Tests;
 
 [TestClass]
 public class QuestNodeFixture : QuestTestBase

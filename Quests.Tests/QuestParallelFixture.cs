@@ -4,6 +4,7 @@ using FluentAssertions;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Enums;
+using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Tests.Entities;
 using Micky5991.Quests.Tests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,14 +12,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests.Feature;
+namespace Micky5991.Quests.Tests;
 
 [TestClass]
-public class QuestAnySuccessFixture : QuestTestBase
+public class QuestParallelFixture : QuestTestBase
 {
     private DummyTask[] tasks;
 
-    private DummyAnySuccessNode composite;
+    private DummyParallelNode composite;
 
     private DummyQuest quest;
 
@@ -72,7 +73,7 @@ public class QuestAnySuccessFixture : QuestTestBase
                 new DummyTask(q, this.eventAggregator!),
             };
 
-            this.composite = new DummyAnySuccessNode(q);
+            this.composite = new DummyParallelNode(q);
             foreach (var task in this.tasks)
             {
                 this.composite.Add(task);
@@ -83,64 +84,43 @@ public class QuestAnySuccessFixture : QuestTestBase
     }
 
     [TestMethod]
-    public void WhenActivatingNodeFirstChildQuestWillActivateOnly()
+    public void ActivatingParallelNodeWillActivateAllOtherNodes()
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+        var childNode = this.quest.ChildNode as IQuestCompositeNode;
 
-        taskNodes[0].Status.Should().Be(QuestStatus.Active);
-        taskNodes.Skip(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-        dummySequence.Status.Should().Be(QuestStatus.Active);
+        childNode!.ChildNodes.All(x => x.Status == QuestStatus.Active).Should().BeTrue();
     }
 
     [TestMethod]
-    public void FailingFirstNodeWillMoveActiveToNext()
+    public void FailingASingleNodeWillFailComposite()
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+        var childNode = this.quest.ChildNode as IQuestCompositeNode;
 
-        taskNodes[0].ForceSetState(QuestStatus.Failure);
+        childNode!.ChildNodes[0].SetStatus(QuestStatus.Failure);
 
-        taskNodes[0].Status.Should().Be(QuestStatus.Failure);
-        taskNodes[1].Status.Should().Be(QuestStatus.Active);
-        taskNodes.Skip(2).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-        dummySequence.Status.Should().Be(QuestStatus.Active);
+        childNode.ChildNodes.All(x => x.Status == QuestStatus.Failure).Should().BeTrue();
+        this.quest.ChildNode!.Status.Should().Be(QuestStatus.Failure);
     }
 
     [TestMethod]
-    public void FailingLastNodeWillActivateFirstNode()
+    public void SucceedingAllChildNodesWillSucceedParallel()
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+        var childNode = this.quest.ChildNode as DummyParallelNode;
 
-        taskNodes[^1].ForceSetState(QuestStatus.Failure);
+        foreach (var questChildNode in childNode!.ChildNodes)
+        {
+            var node = (DummyTask)questChildNode;
 
-        taskNodes[0].Status.Should().Be(QuestStatus.Active);
-        taskNodes[^1].Status.Should().Be(QuestStatus.Failure);
+            node.ForceSetState(QuestStatus.Success);
+        }
 
-        taskNodes.Skip(1).SkipLast(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-
-        dummySequence.Status.Should().Be(QuestStatus.Active);
-    }
-
-    [TestMethod]
-    public void SucceedingFirstElementWillMarkParentNodeAsSuccess()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
-
-        taskNodes[0].ForceSetState(QuestStatus.Success);
-
-        taskNodes.Skip(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-
-        dummySequence.Status.Should().Be(QuestStatus.Success);
+        childNode.ChildNodes.All(x => x.Status == QuestStatus.Success).Should().BeTrue();
+        this.quest.ChildNode!.Status.Should().Be(QuestStatus.Success);
     }
 }
