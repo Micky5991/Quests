@@ -16,6 +16,10 @@ public abstract class QuestNode : IQuestNode
 
     private QuestStatus status = QuestStatus.Sleeping;
 
+    private bool disposed;
+
+    private bool initialized;
+
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -41,10 +45,36 @@ public abstract class QuestNode : IQuestNode
     public bool Finished => this.Status is QuestStatus.Success or QuestStatus.Failure;
 
     /// <inheritdoc />
-    public bool Initialized { get; private set; }
+    public bool Initialized
+    {
+        get => this.initialized;
+        private set
+        {
+            if (this.initialized == value)
+            {
+                return;
+            }
+
+            this.initialized = value;
+            this.OnPropertyChanged();
+        }
+    }
 
     /// <inheritdoc />
-    public bool Disposed { get; private set; }
+    public bool Disposed
+    {
+        get => this.disposed;
+        private set
+        {
+            if (this.disposed == value)
+            {
+                return;
+            }
+
+            this.disposed = value;
+            this.OnPropertyChanged();
+        }
+    }
 
     /// <inheritdoc />
     public QuestStatus Status
@@ -62,6 +92,7 @@ public abstract class QuestNode : IQuestNode
             this.status = value;
             this.OnStatusChanged(value);
             this.OnPropertyChanged();
+            this.OnPropertyChanged(nameof(this.Finished));
         }
     }
 
