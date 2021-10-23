@@ -20,6 +20,7 @@
         <RepositoryUrl>https://github.com/Micky5991/Quests</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -34,6 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
         <None Remove="stylecop.json" />
         <AdditionalFiles Include="stylecop.json" />
     </ItemGroup>
