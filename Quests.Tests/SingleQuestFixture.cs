@@ -16,11 +16,11 @@ public class SingleQuestFixture
 {
     private const string QuestTitle = "Example Quest";
 
-    private IEventAggregator? eventAggregator;
+    private IEventAggregator eventAggregator;
 
-    private IServiceProvider? serviceProvider;
+    private IServiceProvider serviceProvider;
 
-    private DummyQuest? quest;
+    private DummyQuest quest;
 
     private DummyTask ChildNode => (DummyTask) this.quest!.ChildNode!;
 

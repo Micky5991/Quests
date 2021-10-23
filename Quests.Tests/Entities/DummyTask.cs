@@ -10,7 +10,7 @@ public class DummyTask : QuestTaskNode
 {
     private readonly IEventAggregator eventAggregator;
 
-    private IList<ISubscription>? fakeSubscriptions;
+    private IList<ISubscription> fakeSubscriptions;
 
     public int EventSubscriptionAmount { get; private set; }
 

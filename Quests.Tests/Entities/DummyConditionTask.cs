@@ -10,7 +10,7 @@ public class DummyConditionTask : QuestConditonNode
 {
     private readonly IEventAggregator eventAggregator;
 
-    private IList<ISubscription>? fakeSubscriptions;
+    private IList<ISubscription> fakeSubscriptions;
 
     public int EventSubscriptionAmount { get; private set; }
 

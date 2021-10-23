@@ -15,11 +15,11 @@ public class QuestRootFixture
 {
     private const string QuestTitle = "Example Quest";
 
-    private IEventAggregator? eventAggregator;
+    private IEventAggregator eventAggregator;
 
-    private IServiceProvider? serviceProvider;
+    private IServiceProvider serviceProvider;
 
-    private DummyQuest? quest;
+    private DummyQuest quest;
 
     [TestInitialize]
     public void Setup()

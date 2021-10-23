@@ -27,7 +27,7 @@ public class DummyNode : QuestNode
         return this.CanSetToStatus(newStatus);
     }
 
-    public void SetTitle(string? title)
+    public void SetTitle(string title)
     {
         this.Title = title!;
     }

@@ -21,9 +21,9 @@ public class QuestConditionTaskFixture : QuestTestBase
 
     private DummyQuest quest;
 
-    private IEventAggregator? eventAggregator;
+    private IEventAggregator eventAggregator;
 
-    private IServiceProvider? serviceProvider;
+    private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void Setup()

@@ -84,7 +84,7 @@ public class QuestNodeFixture : QuestTestBase
     [TestMethod]
     [DataRow("Cool")]
     [DataRow("")]
-    public void ChangingTitleNotifiesListeners(string? newTitle)
+    public void ChangingTitleNotifiesListeners(string newTitle)
     {
         this.node.SetTitle("OTHER");
 

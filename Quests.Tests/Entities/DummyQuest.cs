@@ -6,8 +6,6 @@ namespace Micky5991.Quests.Tests.Entities;
 
 public class DummyQuest : QuestRootNode
 {
-    public bool Initialized { get; private set; }
-
     public DummyQuest(string title, Func<DummyQuest, IQuestChildNode> setup)
         : this(title)
     {
@@ -22,12 +20,5 @@ public class DummyQuest : QuestRootNode
     public DummyQuest(Func<DummyQuest, IQuestChildNode> setup)
         : this("Example Quest", setup)
     {
-    }
-
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        this.Initialized = true;
     }
 }
