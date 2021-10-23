@@ -10,6 +10,16 @@
         <CodeAnalysisRuleSet>Quests.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <WarningsAsErrors>true</WarningsAsErrors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>0.2.0</PackageVersion>
+        <Title>Quest-Framework for .NET Standard</Title>
+        <Authors>Micky5991</Authors>
+        <Description>Create your own MMORPG-Like Quests in .NET Standard 2.0 or newer.</Description>
+        <Copyright>2021 Micky5991</Copyright>
+        <PackageProjectUrl>https://github.com/Micky5991/Quests</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Micky5991/Quests</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
