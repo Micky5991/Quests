@@ -11,7 +11,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <WarningsAsErrors>true</WarningsAsErrors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>0.3.0</PackageVersion>
+        <PackageVersion>0.3.1</PackageVersion>
         <Title>Quest-Framework for .NET Standard</Title>
         <Authors>Micky5991</Authors>
         <Description>Create your own MMORPG-Like Quests in .NET Standard 2.0 or newer.</Description>
@@ -20,7 +20,7 @@
         <RepositoryUrl>https://github.com/Micky5991/Quests</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReadmeFile>..\README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
