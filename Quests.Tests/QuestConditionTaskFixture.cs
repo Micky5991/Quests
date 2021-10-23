@@ -1,8 +1,5 @@
 using System;
-using System.Linq;
 using FluentAssertions;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Tests.Entities;
@@ -21,23 +18,18 @@ public class QuestConditionTaskFixture : QuestTestBase
 
     private DummyQuest quest;
 
-    private IEventAggregator eventAggregator;
-
     private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void Setup()
     {
         this.serviceProvider = new ServiceCollection()
-                               .AddSingleton<IEventAggregator, EventAggregatorService>()
                                .AddLogging(builder => builder.AddSerilog(Logger.None))
                                .BuildServiceProvider();
 
-        this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
-
         this.quest = this.CreateExampleQuest(q =>
         {
-            this.task = new DummyConditionTask(q, this.eventAggregator);
+            this.task = new DummyConditionTask(q);
 
             return this.task;
         });
@@ -51,19 +43,12 @@ public class QuestConditionTaskFixture : QuestTestBase
         this.quest = null;
         this.task = null;
 
-        this.eventAggregator = null;
         this.serviceProvider = null;
     }
 
     [TestMethod]
     public void EventsShouldBeRegisteredOnActivate()
     {
-        var subscriptions = new ISubscription[]
-        {
-            new FakeSubscription(),
-        };
-        this.task.FakeSubscriptions(subscriptions);
-
         this.quest.SetStatus(QuestStatus.Active);
 
         this.task.EventSubscriptionAmount.Should().Be(1);
@@ -74,18 +59,12 @@ public class QuestConditionTaskFixture : QuestTestBase
     [DataRow(QuestStatus.Failure)]
     public void SubscriptionsWillBeDisposedOnNonSuccessStatus(QuestStatus newStatus)
     {
-        var subscriptions = new ISubscription[]
-        {
-            new FakeSubscription(),
-        };
-
-        this.task.FakeSubscriptions(subscriptions);
         this.quest.SetStatus(QuestStatus.Active);
 
         this.task.ForceSetState(newStatus);
 
         this.task.EventSubscriptionAmount.Should().Be(1);
-        subscriptions.All(x => x.IsDisposed).Should().BeTrue();
+        this.task.EventUnsubscriptionAmount.Should().Be(1);
     }
 
     [TestMethod]
@@ -96,7 +75,7 @@ public class QuestConditionTaskFixture : QuestTestBase
     {
         var amount = 0;
 
-        this.task.PropertyChanged += (sender, args) =>
+        this.task.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(IQuestNode.Status))
             {

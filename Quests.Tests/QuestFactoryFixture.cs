@@ -1,7 +1,5 @@
 using System;
 using FluentAssertions;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Services;
 using Micky5991.Quests.Tests.TestBases;
@@ -28,7 +26,6 @@ public class QuestFactoryFixture : QuestTestBase
         this.quest = new Mock<IQuestRootNode>();
 
         this.serviceProvider = new ServiceCollection()
-                               .AddSingleton<IEventAggregator, EventAggregatorService>()
                                .AddTransient(x => this.quest.Object)
                                .AddLogging(builder => builder.AddSerilog(Logger.None))
                                .BuildServiceProvider();

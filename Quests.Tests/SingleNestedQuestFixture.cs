@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Entities;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Tests.Entities;
@@ -18,8 +16,6 @@ public class SingleNestedQuestFixture
 {
     private const string QuestTitle = "Example Quest";
 
-    private IEventAggregator eventAggregator;
-
     private IServiceProvider serviceProvider;
 
     private DummyQuest quest;
@@ -32,16 +28,13 @@ public class SingleNestedQuestFixture
     public void Setup()
     {
         this.serviceProvider = new ServiceCollection()
-                               .AddSingleton<IEventAggregator, EventAggregatorService>()
                                .AddLogging(builder => builder.AddSerilog(Logger.None))
                                .BuildServiceProvider();
-
-        this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
 
         this.quest = new DummyQuest(QuestTitle,
                                       q => new QuestSequenceNode(q)
                                       {
-                                          new DummyTask(q, this.eventAggregator),
+                                          new DummyTask(q),
                                       });
 
         this.quest.Initialize();
@@ -51,7 +44,6 @@ public class SingleNestedQuestFixture
     public void TearDown()
     {
         this.serviceProvider = null;
-        this.eventAggregator = null;
         this.quest = null!;
     }
 

@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Tests.Entities;
 using Micky5991.Quests.Tests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,19 +19,14 @@ public class QuestCompositeFixture : QuestTestBase
 
     private DummyQuest quest;
 
-    private IEventAggregator eventAggregator;
-
     private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void Setup()
     {
         this.serviceProvider = new ServiceCollection()
-                               .AddSingleton<IEventAggregator, EventAggregatorService>()
                                .AddLogging(builder => builder.AddSerilog(Logger.None))
                                .BuildServiceProvider();
-
-        this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
 
         this.SetupQuests(true);
     }
@@ -54,7 +47,6 @@ public class QuestCompositeFixture : QuestTestBase
         this.composite = null!;
         this.tasks = null!;
 
-        this.eventAggregator = null;
         this.serviceProvider = null;
     }
 
@@ -64,11 +56,11 @@ public class QuestCompositeFixture : QuestTestBase
         {
             this.tasks = new[]
             {
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
+                new DummyTask(q),
+                new DummyTask(q),
+                new DummyTask(q),
+                new DummyTask(q),
+                new DummyTask(q),
             };
 
             this.composite = new DummyCompositeNode(q);
@@ -128,7 +120,7 @@ public class QuestCompositeFixture : QuestTestBase
     [TestMethod]
     public void AddingChildQuestAfterInitWillInitializeNewChildQuest()
     {
-        var task = new DummyTask(this.quest, this.eventAggregator!);
+        var task = new DummyTask(this.quest);
         this.composite.Add(task);
 
         task.Initialized.Should().BeTrue();
@@ -139,7 +131,7 @@ public class QuestCompositeFixture : QuestTestBase
     {
         var fakeQuest = new DummyQuest("FAKE");
 
-        var task = new DummyTask(fakeQuest, this.eventAggregator!);
+        var task = new DummyTask(fakeQuest);
 
         Action action = () => this.composite.Add(task);
         action.Should().Throw<ArgumentException>().WithMessage("*root*");
@@ -148,7 +140,7 @@ public class QuestCompositeFixture : QuestTestBase
     [TestMethod]
     public void AddingDisposedChildNodeThrowsException()
     {
-        var task = new DummyTask(this.quest, this.eventAggregator!);
+        var task = new DummyTask(this.quest);
         task.Initialize();
         task.Dispose();
 

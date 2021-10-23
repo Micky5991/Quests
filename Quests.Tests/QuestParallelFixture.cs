@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Tests.Entities;
@@ -23,19 +21,14 @@ public class QuestParallelFixture : QuestTestBase
 
     private DummyQuest quest;
 
-    private IEventAggregator eventAggregator;
-
     private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void Setup()
     {
         this.serviceProvider = new ServiceCollection()
-                               .AddSingleton<IEventAggregator, EventAggregatorService>()
                                .AddLogging(builder => builder.AddSerilog(Logger.None))
                                .BuildServiceProvider();
-
-        this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
 
         this.SetupQuests(true);
     }
@@ -56,7 +49,6 @@ public class QuestParallelFixture : QuestTestBase
         this.composite = null!;
         this.tasks = null!;
 
-        this.eventAggregator = null;
         this.serviceProvider = null;
     }
 
@@ -66,11 +58,11 @@ public class QuestParallelFixture : QuestTestBase
         {
             this.tasks = new[]
             {
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
-                new DummyTask(q, this.eventAggregator!),
+                new DummyTask(q),
+                new DummyTask(q),
+                new DummyTask(q),
+                new DummyTask(q),
+                new DummyTask(q),
             };
 
             this.composite = new DummyParallelNode(q);

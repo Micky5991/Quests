@@ -1,6 +1,4 @@
 using System;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Tests.Entities;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +13,6 @@ public abstract class QuestTestBase
     {
         return serviceCollection(
                                  new ServiceCollection()
-                                     .AddSingleton<IEventAggregator, EventAggregatorService>()
                                      .AddLogging(builder => builder.AddSerilog(Logger.None)))
             .BuildServiceProvider();
     }

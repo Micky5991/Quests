@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using Micky5991.EventAggregator.Interfaces;
-using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 using Micky5991.Quests.Tests.Entities;
@@ -21,23 +19,18 @@ public class QuestTaskFixture : QuestTestBase
 
     private DummyQuest quest;
 
-    private IEventAggregator eventAggregator;
-
     private IServiceProvider serviceProvider;
 
     [TestInitialize]
     public void Setup()
     {
         this.serviceProvider = new ServiceCollection()
-                               .AddSingleton<IEventAggregator, EventAggregatorService>()
                                .AddLogging(builder => builder.AddSerilog(Logger.None))
                                .BuildServiceProvider();
 
-        this.eventAggregator = this.serviceProvider.GetService<IEventAggregator>()!;
-
         this.quest = this.CreateExampleQuest(q =>
         {
-            this.task = new DummyTask(q, this.eventAggregator);
+            this.task = new DummyTask(q);
 
             return this.task;
         });
@@ -51,19 +44,12 @@ public class QuestTaskFixture : QuestTestBase
         this.quest = null;
         this.task = null;
 
-        this.eventAggregator = null;
         this.serviceProvider = null;
     }
 
     [TestMethod]
     public void EventsShouldBeRegisteredOnActivate()
     {
-        var subscriptions = new ISubscription[]
-        {
-            new FakeSubscription(),
-        };
-        this.task.FakeSubscriptions(subscriptions);
-
         this.quest.SetStatus(QuestStatus.Active);
 
         this.task.EventSubscriptionAmount.Should().Be(1);
@@ -75,52 +61,28 @@ public class QuestTaskFixture : QuestTestBase
     [DataRow(QuestStatus.Success)]
     public void SubscriptionsWillBeDisposedOnNonActiveStatus(QuestStatus newStatus)
     {
-        var subscriptions = new ISubscription[]
-        {
-            new FakeSubscription(),
-        };
-
-        this.task.FakeSubscriptions(subscriptions);
         this.quest.SetStatus(QuestStatus.Active);
 
         this.task.ForceSetState(newStatus);
 
         this.task.EventSubscriptionAmount.Should().Be(1);
-        subscriptions.All(x => x.IsDisposed).Should().BeTrue();
+        this.task.EventUnsubscriptionAmount.Should().Be(1);
     }
 
     [TestMethod]
     public void SubscriptionsWillNotBeReusedOnStatusChange()
     {
-        var firstSubscription = new FakeSubscription();
-        var secondSubscription = new FakeSubscription();
-
-        this.task.FakeSubscriptions(new ISubscription[]
-        {
-            firstSubscription,
-        });
-
         this.quest.SetStatus(QuestStatus.Active);
         this.quest.SetStatus(QuestStatus.Sleeping);
 
         this.task.EventSubscriptionAmount.Should().Be(1);
-        firstSubscription.IsDisposed.Should().BeTrue();
-        firstSubscription.DisposeAmount.Should().Be(1);
-
-        this.task.FakeSubscriptions(new ISubscription[]
-        {
-            secondSubscription,
-        });
+        this.task.EventSubscriptionAmount.Should().Be(1);
 
         this.quest.SetStatus(QuestStatus.Active);
         this.quest.SetStatus(QuestStatus.Sleeping);
 
         this.task.EventSubscriptionAmount.Should().Be(2);
-        firstSubscription.IsDisposed.Should().BeTrue();
-        firstSubscription.DisposeAmount.Should().Be(1);
-
-        secondSubscription.IsDisposed.Should().BeTrue();
-        secondSubscription.DisposeAmount.Should().Be(1);
+        this.task.EventUnsubscriptionAmount.Should().Be(2);
     }
 
     [TestMethod]
