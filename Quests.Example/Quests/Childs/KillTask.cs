@@ -6,7 +6,7 @@ using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Example.Quests.Childs
 {
-    public class KillTask : QuestTaskNode
+    public class KillTask : QuestEventTaskNode
     {
         public const int RequiredKills = 5;
 

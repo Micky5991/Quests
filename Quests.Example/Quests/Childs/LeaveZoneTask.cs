@@ -1,11 +1,10 @@
 using Micky5991.EventAggregator.Interfaces;
-using Micky5991.Quests.Entities;
 using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Example.Quests.Childs;
 
-public class LeaveZoneTask : QuestTaskNode
+public class LeaveZoneTask : QuestEventTaskNode
 {
     private readonly int zoneId;
 

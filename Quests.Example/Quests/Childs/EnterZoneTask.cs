@@ -5,7 +5,7 @@ using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Example.Quests.Childs;
 
-public class EnterZoneTask : QuestTaskNode
+public class EnterZoneTask : QuestEventTaskNode
 {
     private readonly int zoneId;
 

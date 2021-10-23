@@ -1,7 +1,5 @@
-using System.Collections.Immutable;
 using Dawn;
 using JetBrains.Annotations;
-using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 
@@ -13,8 +11,6 @@ namespace Micky5991.Quests.Entities;
 [PublicAPI]
 public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
 {
-    private IImmutableSet<ISubscription> eventSubscriptions = ImmutableHashSet<ISubscription>.Empty;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestConditonNode"/> class.
     /// </summary>
@@ -45,12 +41,6 @@ public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
         }
     }
 
-    /// <summary>
-    /// Calls to this method trigger a subscription of all needed events for this quest tree.
-    /// </summary>
-    /// <returns>List of created subscriptions.</returns>
-    protected abstract IEnumerable<ISubscription> GetEventSubscriptions();
-
     /// <inheritdoc />
     protected override void OnStatusChanged(QuestStatus newStatus)
     {
@@ -77,21 +67,13 @@ public abstract class QuestConditonNode : QuestChildNode, IQuestTaskNode
         base.OnStatusChanged(newStatus);
     }
 
-    private void AttachEventListeners()
-    {
-        this.DetachEventListeners();
+    /// <summary>
+    /// Attaches listeners to quest events which contribute to their progression.
+    /// </summary>
+    protected abstract void AttachEventListeners();
 
-        this.eventSubscriptions = this.GetEventSubscriptions().ToImmutableHashSet();
-    }
-
-    private void DetachEventListeners()
-    {
-        var subscriptions = this.eventSubscriptions;
-        this.eventSubscriptions = ImmutableHashSet<ISubscription>.Empty;
-
-        foreach (var subscription in subscriptions)
-        {
-            subscription.Dispose();
-        }
-    }
+    /// <summary>
+    /// Detatches previously attached event listeners in <see cref="AttachEventListeners"/>.
+    /// </summary>
+    protected abstract void DetachEventListeners();
 }
