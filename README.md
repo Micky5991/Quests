@@ -47,26 +47,26 @@ To provide you with some information about the possibilities this library offers
 
 ```
 QUEST ROOT: Journey to save the princess
-├─COMPOSITE SEQUENCE
-│ ├─ TASK: Find your brother
-│ ├─ COMPOSITE SEQUENCE
-│ │ ├─ TASK: Enter the Bomb Battlefield.
-│ │ ├─ TASK: Find the boss of this Level.
-│ │ ├─ COMPOSITE PARALLEL
-│ │ │ ├─ CONDITION TASK: Stay alive during the bossfight.
-│ │ │ └─ TASK: Defeat the great bomb boss
-│ │ └─ TASK: Leave the Bomb Battlefield.
-│ ├─ COMPOSITE SEQUENCE
-│ │ ├─ TASK: Enter the final world
-│ │ └─ COMPOSITE PARALLEL
-│ │   ├─ TASK: Defeat all enemies in this world
-│ │   └─ COMPOSITE SEQUENCE
-│ │     ├─ TASK: Find the last boss
-│ │     ├─ COMPOSITE PARALLEL
-│ │     │ ├─ CONDITION TASK: Stay alive during the bossfight.
-│ │     │ └─ TASK: Defeat the final boss
-│ │     └─ TASK: Find and free the princess
-│ └─ TASK: Claim your reward
+└─COMPOSITE SEQUENCE
+  ├─ TASK: Find your brother
+  ├─ COMPOSITE SEQUENCE
+  │ ├─ TASK: Enter the Bomb Battlefield.
+  │ ├─ TASK: Find the boss of this Level.
+  │ ├─ COMPOSITE PARALLEL
+  │ │ ├─ CONDITION TASK: Stay alive during the bossfight.
+  │ │ └─ TASK: Defeat the great bomb boss
+  │ └─ TASK: Leave the Bomb Battlefield.
+  ├─ COMPOSITE SEQUENCE
+  │ ├─ TASK: Enter the final world
+  │ └─ COMPOSITE PARALLEL
+  │   ├─ TASK: Defeat all enemies in this world
+  │   └─ COMPOSITE SEQUENCE
+  │     ├─ TASK: Find the last boss
+  │     ├─ COMPOSITE PARALLEL
+  │     │ ├─ CONDITION TASK: Stay alive during the bossfight.
+  │     │ └─ TASK: Defeat the final boss
+  │     └─ TASK: Find and free the princess
+  └─ TASK: Claim your reward
 ```
 
 This is a quest structure which can be represented with this library.
