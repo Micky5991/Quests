@@ -11,7 +11,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <WarningsAsErrors>true</WarningsAsErrors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>0.2.0</PackageVersion>
+        <PackageVersion>0.3.0</PackageVersion>
         <Title>Quest-Framework for .NET Standard</Title>
         <Authors>Micky5991</Authors>
         <Description>Create your own MMORPG-Like Quests in .NET Standard 2.0 or newer.</Description>
