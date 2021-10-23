@@ -6,7 +6,7 @@ Create your own RPG-like quests with this library built on .NET Standard.
 
 This library targets .NET Standard 2.0 and .NET Standard 2.1. You can install this package over NuGet.
 ```
-PM> Install-Package Micky5991.Inventory
+PM> Install-Package Micky5991.Quests
 ```
 
 ## Features
