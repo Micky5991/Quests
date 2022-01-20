@@ -149,4 +149,13 @@ public class QuestAnySuccessFixture : QuestTestBase
         this.quest.Status.Should().Be(QuestStatus.Success);
     }
 
+    [TestMethod]
+    public void SucceedingATaskWillMarkOtherTasksAsSleeping()
+    {
+        this.quest.SetStatus(QuestStatus.Active);
+        this.tasks.First().ForceSetState(QuestStatus.Success);
+
+        this.tasks.Skip(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
+    }
+
 }

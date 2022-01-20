@@ -48,7 +48,7 @@ public class QuestAnySuccessNode : QuestCompositeNode
                 break;
 
             case QuestStatus.Active:
-                this.MarkAllChildNodesAsActive();
+                this.MarkAllChildsAsActive();
 
                 break;
 
@@ -61,7 +61,15 @@ public class QuestAnySuccessNode : QuestCompositeNode
         base.OnStatusChanged(newStatus);
     }
 
-    private void MarkAllChildNodesAsActive()
+    /// <inheritdoc />
+    protected override void MarkAsSuccess()
+    {
+        this.MarkAllChildsAsSleeping();
+
+        base.MarkAsSuccess();
+    }
+
+    private void MarkAllChildsAsActive()
     {
         if (this.ChildNodes.Count == 0 || this.ChildNodes.All(x => x.Status == QuestStatus.Failure))
         {
@@ -106,7 +114,7 @@ public class QuestAnySuccessNode : QuestCompositeNode
 
             case nameof(IQuestChildNode.Status)
                 when sender is IQuestChildNode childNode && childNode.Status == QuestStatus.Failure:
-                this.MarkAllChildNodesAsActive();
+                this.MarkAllChildsAsActive();
 
                 break;
         }
