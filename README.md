@@ -38,7 +38,7 @@ This library provides different node types out of the box. But you can inherit f
    Chain quest tasks or other composite nodes one after another to accomplish some kind of dependency between different tasks. It tries to finish every subtask.
 - **Composite: Parallel**\
    Create a batch of tasks or other composite nodes which will be activated as soon as the parent activates. Here you can offer multiple quests to the target.
-- **Composite: Any Success Sequence**\
+- **Composite: First Success Sequence**\
    Create a try-and-error task chain that will succeed as soon as the first child node signals a successful state. Useful if you want to give your target repeated quests and fallback to another quest, if the first was not successful.
 
 ## Example quest structure
