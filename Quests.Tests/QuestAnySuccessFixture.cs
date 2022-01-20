@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using FluentAssertions;
+using Micky5991.Quests.Enums;
 using Micky5991.Quests.Tests.Entities;
 using Micky5991.Quests.Tests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,5 +74,67 @@ public class QuestAnySuccessFixture : QuestTestBase
         }, initialize);
     }
 
+    [TestMethod]
+    public void QuestNodeStartsWithSleepingState()
+    {
+        this.composite.Status.Should().Be(QuestStatus.Sleeping);
+    }
+
+    [TestMethod]
+    public void QuestNodeStartsWithSleepingTasks()
+    {
+        this.composite.ChildNodes.Should().BeEquivalentTo(this.tasks);
+    }
+
+    [TestMethod]
+    public void ActivatingQuestWillActivateAllChildNodes()
+    {
+        this.quest.SetStatus(QuestStatus.Active);
+
+        this.composite.ChildNodes.Should().OnlyContain(x => x.Status == QuestStatus.Active);
+    }
+
+    [TestMethod]
+    public void FailingASingleTaskWillStillBeActive()
+    {
+        this.quest.SetStatus(QuestStatus.Active);
+        this.tasks.First().ForceSetState(QuestStatus.Failure);
+
+        this.composite.Status.Should().Be(QuestStatus.Active);
+        this.quest.Status.Should().Be(QuestStatus.Active);
+    }
+
+    [TestMethod]
+    public void FailingAllTasksWillFailQuest()
+    {
+        foreach (var task in this.tasks)
+        {
+            task.ForceSetState(QuestStatus.Failure);
+        }
+
+        this.composite.Status.Should().Be(QuestStatus.Failure);
+        this.quest.Status.Should().Be(QuestStatus.Failure);
+    }
+
+    [TestMethod]
+    public void DeactivatingNodeWillKeepChildQuestsStateSameIfNotActive()
+    {
+        this.quest.SetStatus(QuestStatus.Active);
+        this.tasks.First().ForceSetState(QuestStatus.Failure);
+        this.quest.SetStatus(QuestStatus.Sleeping);
+
+        this.tasks.First().Status.Should().Be(QuestStatus.Failure);
+        this.tasks.Skip(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
+    }
+
+    [TestMethod]
+    public void SucceedingASingleTaskWillSucceedComposite()
+    {
+        this.quest.SetStatus(QuestStatus.Active);
+        this.tasks.First().ForceSetState(QuestStatus.Success);
+
+        this.composite.Status.Should().Be(QuestStatus.Success);
+        this.quest.Status.Should().Be(QuestStatus.Success);
+    }
 
 }
