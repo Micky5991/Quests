@@ -3,9 +3,9 @@ using Micky5991.Quests.Interfaces.Nodes;
 
 namespace Micky5991.Quests.Tests.Entities;
 
-public class DummyAnySuccessNode : QuestAnySuccessSequenceNode
+public class DummyFirstSuccessNode : QuestFirstSuccessSequenceNode
 {
-    public DummyAnySuccessNode(IQuestRootNode rootNode)
+    public DummyFirstSuccessNode(IQuestRootNode rootNode)
         : base(rootNode)
     {
     }

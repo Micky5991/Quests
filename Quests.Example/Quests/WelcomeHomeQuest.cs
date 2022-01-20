@@ -19,7 +19,7 @@ public class WelcomeHomeQuest : QuestRootNode
                                     new StayAliveTask(this, eventAggregator),
                                     new KillTask(this, eventAggregator),
                                 },
-                                new QuestAnySuccessSequenceNode(this)
+                                new QuestFirstSuccessSequenceNode(this)
                                 {
                                     new QuestParallelNode(this)
                                     {

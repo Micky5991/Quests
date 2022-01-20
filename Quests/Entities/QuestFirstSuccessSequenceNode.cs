@@ -11,16 +11,16 @@ namespace Micky5991.Quests.Entities;
 /// When all child quests fail or no child quests are available, this node will fail.
 /// </summary>
 [PublicAPI]
-public class QuestAnySuccessSequenceNode : QuestCompositeNode
+public class QuestFirstSuccessSequenceNode : QuestCompositeNode
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="QuestAnySuccessSequenceNode"/> class.
+    /// Initializes a new instance of the <see cref="QuestFirstSuccessSequenceNode"/> class.
     /// </summary>
     /// <param name="rootNode">Root node of this quest tree.</param>
-    public QuestAnySuccessSequenceNode(IQuestRootNode rootNode)
+    public QuestFirstSuccessSequenceNode(IQuestRootNode rootNode)
         : base(rootNode)
     {
-        this.Title = "ANY SUCCESS NODE";
+        this.Title = "FIRST SUCCESS SEQUENCE NODE";
     }
 
     /// <inheritdoc />

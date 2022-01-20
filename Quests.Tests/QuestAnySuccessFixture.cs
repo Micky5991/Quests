@@ -16,7 +16,7 @@ public class QuestAnySuccessFixture : QuestTestBase
 {
     private DummyTask[] tasks;
 
-    private DummyAnySuccessNode composite;
+    private DummyFirstSuccessNode composite;
 
     private DummyQuest quest;
 
@@ -64,7 +64,7 @@ public class QuestAnySuccessFixture : QuestTestBase
                 new DummyTask(q),
             };
 
-            this.composite = new DummyAnySuccessNode(q);
+            this.composite = new DummyFirstSuccessNode(q);
             foreach (var task in this.tasks)
             {
                 this.composite.Add(task);
@@ -79,7 +79,7 @@ public class QuestAnySuccessFixture : QuestTestBase
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
+        var dummySequence = this.quest.ChildNode as DummyFirstSuccessNode;
         var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
 
         taskNodes[0].Status.Should().Be(QuestStatus.Active);
@@ -92,7 +92,7 @@ public class QuestAnySuccessFixture : QuestTestBase
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
+        var dummySequence = this.quest.ChildNode as DummyFirstSuccessNode;
         var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
 
         taskNodes[0].ForceSetState(QuestStatus.Failure);
@@ -108,7 +108,7 @@ public class QuestAnySuccessFixture : QuestTestBase
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
+        var dummySequence = this.quest.ChildNode as DummyFirstSuccessNode;
         var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
 
         taskNodes[^1].ForceSetState(QuestStatus.Failure);
@@ -126,7 +126,7 @@ public class QuestAnySuccessFixture : QuestTestBase
     {
         this.quest.SetStatus(QuestStatus.Active);
 
-        var dummySequence = this.quest.ChildNode as DummyAnySuccessNode;
+        var dummySequence = this.quest.ChildNode as DummyFirstSuccessNode;
         var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
 
         taskNodes[0].ForceSetState(QuestStatus.Success);
