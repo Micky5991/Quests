@@ -41,7 +41,7 @@ This library provides different node types out of the box. But you can inherit f
 - **Composite: First Success Sequence**\
    Create a try-and-error task chain that will succeed as soon as the first child node signals a successful state. Useful if you want to give your target repeated quests and fallback to another quest, if the first was not successful.
 - **Composite: Any Success**\
-   Similar to the "Composite: Parallel", but as soon as the first child node succeeds, this node will also succeed. Single failures are no problem, as long as any other pending node is inside this composite.
+   Similar to the "Composite: Parallel". All nodes are activated as soon as this node activates. The success state will be reached as soon as a single child node succeeds. Single failures are no problem, as long as any other pending node is inside this composite.
 
 ## Example quest structure
 
