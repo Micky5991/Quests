@@ -12,7 +12,7 @@ using Serilog.Core;
 namespace Micky5991.Quests.Tests;
 
 [TestClass]
-public class QuestAnySuccessFixture : QuestTestBase
+public class QuestFirstSuccessSequenceFixture : QuestTestBase
 {
     private DummyTask[] tasks;
 
