@@ -107,6 +107,8 @@ public class QuestAnySuccessFixture : QuestTestBase
     [TestMethod]
     public void FailingAllTasksWillFailQuest()
     {
+        this.quest.SetStatus(QuestStatus.Active);
+
         foreach (var task in this.tasks)
         {
             task.ForceSetState(QuestStatus.Failure);
@@ -114,6 +116,16 @@ public class QuestAnySuccessFixture : QuestTestBase
 
         this.composite.Status.Should().Be(QuestStatus.Failure);
         this.quest.Status.Should().Be(QuestStatus.Failure);
+    }
+
+    [TestMethod]
+    public void ActivatingWithNoTasksWillFail()
+    {
+        var quest = this.CreateExampleQuest(x => new DummyAnySuccessNode(x));
+
+        quest.SetStatus(QuestStatus.Active);
+
+        quest.Status.Should().Be(QuestStatus.Failure);
     }
 
     [TestMethod]
