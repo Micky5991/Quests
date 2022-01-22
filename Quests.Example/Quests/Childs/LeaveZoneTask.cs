@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;

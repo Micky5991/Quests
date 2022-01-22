@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;

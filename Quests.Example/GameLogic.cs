@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Enums;

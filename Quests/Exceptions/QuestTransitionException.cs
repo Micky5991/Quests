@@ -1,3 +1,4 @@
+using System;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 

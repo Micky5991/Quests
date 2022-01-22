@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Micky5991.Quests.Entities;
 using Micky5991.Quests.Example.Quests;
 using Micky5991.Quests.Services;

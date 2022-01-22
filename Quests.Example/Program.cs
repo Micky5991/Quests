@@ -1,4 +1,5 @@
-﻿using Micky5991.EventAggregator.Interfaces;
+﻿using System;
+using Micky5991.EventAggregator.Interfaces;
 using Micky5991.EventAggregator.Services;
 using Micky5991.Quests.Interfaces.Services;
 using Micky5991.Quests.Services;

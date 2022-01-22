@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
 using Micky5991.Quests.Example.Entities;
