@@ -8,66 +8,67 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestRegistryFixture
+namespace Micky5991.Quests.Tests
 {
-    private Mock<IServiceCollection> services;
-
-    private TestMetaRegistry registry;
-
-    [TestInitialize]
-    public void Initialize()
+    [TestClass]
+    public class QuestRegistryFixture
     {
-        this.services = new Mock<IServiceCollection>();
+        private Mock<IServiceCollection> services;
 
-        this.registry = new TestMetaRegistry();
-    }
+        private TestMetaRegistry registry;
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        this.services = null;
-    }
-
-    [TestMethod]
-    public void PassingNullAsServiceCollectionThrowsException()
-    {
-        Action action = () => this.registry.AddQuestsToServiceCollection(null!);
-
-        action.Should().Throw<ArgumentNullException>();
-    }
-
-    [TestMethod]
-    public void AddQuestsToServiceCollectionRegistersAllTypes()
-    {
-        this.services.Setup(
-                            x => x.Add(
-                                       It.Is<ServiceDescriptor>(s =>
-                                                                    s.ServiceType == typeof(DummyQuest) &&
-                                                                    s.ImplementationType == typeof(DummyQuest) &&
-                                                                    s.Lifetime == ServiceLifetime.Transient
-                                                                    )
-                                       ));
-
-        this.registry.AddQuestsToServiceCollection(this.services.Object);
-
-        this.services.Verify(
-                            x => x.Add(
-                                       It.Is<ServiceDescriptor>(s =>
-                                                                    s.ServiceType == typeof(DummyQuest) &&
-                                                                    s.ImplementationType == typeof(DummyQuest) &&
-                                                                    s.Lifetime == ServiceLifetime.Transient
-                                                               )
-                                      ), Times.Once);
-    }
-
-    private class TestMetaRegistry : QuestRegistry
-    {
-        protected override IEnumerable<QuestMeta> BuildAvailableQuestMeta()
+        [TestInitialize]
+        public void Initialize()
         {
-            yield return this.BuildQuest<DummyQuest>();
+            this.services = new Mock<IServiceCollection>();
+
+            this.registry = new TestMetaRegistry();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            this.services = null;
+        }
+
+        [TestMethod]
+        public void PassingNullAsServiceCollectionThrowsException()
+        {
+            Action action = () => this.registry.AddQuestsToServiceCollection(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [TestMethod]
+        public void AddQuestsToServiceCollectionRegistersAllTypes()
+        {
+            this.services.Setup(
+                                x => x.Add(
+                                           It.Is<ServiceDescriptor>(s =>
+                                                                        s.ServiceType == typeof(DummyQuest) &&
+                                                                        s.ImplementationType == typeof(DummyQuest) &&
+                                                                        s.Lifetime == ServiceLifetime.Transient
+                                                                        )
+                                           ));
+
+            this.registry.AddQuestsToServiceCollection(this.services.Object);
+
+            this.services.Verify(
+                                x => x.Add(
+                                           It.Is<ServiceDescriptor>(s =>
+                                                                        s.ServiceType == typeof(DummyQuest) &&
+                                                                        s.ImplementationType == typeof(DummyQuest) &&
+                                                                        s.Lifetime == ServiceLifetime.Transient
+                                                                   )
+                                          ), Times.Once);
+        }
+
+        private class TestMetaRegistry : QuestRegistry
+        {
+            protected override IEnumerable<QuestMeta> BuildAvailableQuestMeta()
+            {
+                yield return this.BuildQuest<DummyQuest>();
+            }
         }
     }
 }

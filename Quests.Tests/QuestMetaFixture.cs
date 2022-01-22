@@ -4,39 +4,40 @@ using Micky5991.Quests.Entities;
 using Micky5991.Quests.Tests.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestMetaFixture
+namespace Micky5991.Quests.Tests
 {
-    [TestMethod]
-    public void PassingNullAsTypeThrowsException()
+    [TestClass]
+    public class QuestMetaFixture
     {
-        Action action = () =>
+        [TestMethod]
+        public void PassingNullAsTypeThrowsException()
         {
-            var _ = new QuestMeta(null!);
-        };
+            Action action = () =>
+            {
+                var _ = new QuestMeta(null!);
+            };
 
-        action.Should().Throw<ArgumentNullException>();
-    }
+            action.Should().Throw<ArgumentNullException>();
+        }
 
-    [TestMethod]
-    public void PassingNonRootNodeTypeThrowsException()
-    {
-        Action action = () =>
+        [TestMethod]
+        public void PassingNonRootNodeTypeThrowsException()
         {
-            var _ = new QuestMeta(typeof(int));
-        };
+            Action action = () =>
+            {
+                var _ = new QuestMeta(typeof(int));
+            };
 
-        action.Should().Throw<ArgumentException>();
-    }
+            action.Should().Throw<ArgumentException>();
+        }
 
-    [TestMethod]
-    public void TypePropertyWillReturnCorrectValue()
-    {
-        var typeValue = typeof(DummyQuest);
-        var meta = new QuestMeta(typeValue);
+        [TestMethod]
+        public void TypePropertyWillReturnCorrectValue()
+        {
+            var typeValue = typeof(DummyQuest);
+            var meta = new QuestMeta(typeValue);
 
-        meta.Type.Should().Be(typeValue);
+            meta.Type.Should().Be(typeValue);
+        }
     }
 }

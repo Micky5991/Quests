@@ -8,159 +8,160 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestCompositeFixture : QuestTestBase
+namespace Micky5991.Quests.Tests
 {
-    private DummyTask[] tasks;
-
-    private DummyCompositeNode composite;
-
-    private DummyQuest quest;
-
-    private IServiceProvider serviceProvider;
-
-    [TestInitialize]
-    public void Setup()
+    [TestClass]
+    public class QuestCompositeFixture : QuestTestBase
     {
-        this.serviceProvider = new ServiceCollection()
-                               .AddLogging(builder => builder.AddSerilog(Logger.None))
-                               .BuildServiceProvider();
+        private DummyTask[] tasks;
 
-        this.SetupQuests(true);
-    }
+        private DummyCompositeNode composite;
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        try
+        private DummyQuest quest;
+
+        private IServiceProvider serviceProvider;
+
+        [TestInitialize]
+        public void Setup()
         {
-            this.quest.Dispose();
-        }
-        catch (ObjectDisposedException)
-        {
-            // ignore.
+            this.serviceProvider = new ServiceCollection()
+                                   .AddLogging(builder => builder.AddSerilog(Logger.None))
+                                   .BuildServiceProvider();
+
+            this.SetupQuests(true);
         }
 
-        this.quest = null!;
-        this.composite = null!;
-        this.tasks = null!;
-
-        this.serviceProvider = null;
-    }
-
-    private void SetupQuests(bool initialize)
-    {
-        this.quest = this.CreateExampleQuest(q =>
+        [TestCleanup]
+        public void Cleanup()
         {
-            this.tasks = new[]
+            try
             {
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-            };
-
-            this.composite = new DummyCompositeNode(q);
-            foreach (var task in this.tasks)
+                this.quest.Dispose();
+            }
+            catch (ObjectDisposedException)
             {
-                this.composite.Add(task);
+                // ignore.
             }
 
-            return this.composite;
-        }, initialize);
-    }
+            this.quest = null!;
+            this.composite = null!;
+            this.tasks = null!;
 
-    [TestMethod]
-    public void AddingNoCompositeNodeWillReturnEmptyChildNodes()
-    {
-        this.quest = this.CreateExampleQuest(q =>
-        {
-            this.composite = new DummyCompositeNode(q);
+            this.serviceProvider = null;
+        }
 
-            return this.composite;
-        });
-
-        this.composite.ChildNodes.Should().BeEmpty();
-    }
-
-    [TestMethod]
-    public void AddingNullAsChildNodeThrowsException()
-    {
-        Action action = () =>
+        private void SetupQuests(bool initialize)
         {
             this.quest = this.CreateExampleQuest(q =>
             {
-                this.composite = new DummyCompositeNode(q)
+                this.tasks = new[]
                 {
-                    null!,
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
                 };
+
+                this.composite = new DummyCompositeNode(q);
+                foreach (var task in this.tasks)
+                {
+                    this.composite.Add(task);
+                }
+
+                return this.composite;
+            }, initialize);
+        }
+
+        [TestMethod]
+        public void AddingNoCompositeNodeWillReturnEmptyChildNodes()
+        {
+            this.quest = this.CreateExampleQuest(q =>
+            {
+                this.composite = new DummyCompositeNode(q);
 
                 return this.composite;
             });
-        };
 
-        action.Should().Throw<ArgumentNullException>();
-    }
+            this.composite.ChildNodes.Should().BeEmpty();
+        }
 
-    [TestMethod]
-    public void InitializingQuestInitializesAllChildQuests()
-    {
-        this.SetupQuests(false);
+        [TestMethod]
+        public void AddingNullAsChildNodeThrowsException()
+        {
+            Action action = () =>
+            {
+                this.quest = this.CreateExampleQuest(q =>
+                {
+                    this.composite = new DummyCompositeNode(q)
+                    {
+                        null!,
+                    };
 
-        this.tasks.Any(x => x.Initialized).Should().BeFalse();
+                    return this.composite;
+                });
+            };
 
-        this.quest.Initialize();
+            action.Should().Throw<ArgumentNullException>();
+        }
 
-        this.tasks.All(x => x.Initialized).Should().BeTrue();
-    }
+        [TestMethod]
+        public void InitializingQuestInitializesAllChildQuests()
+        {
+            this.SetupQuests(false);
 
-    [TestMethod]
-    public void AddingChildQuestAfterInitWillInitializeNewChildQuest()
-    {
-        var task = new DummyTask(this.quest);
-        this.composite.Add(task);
+            this.tasks.Any(x => x.Initialized).Should().BeFalse();
 
-        task.Initialized.Should().BeTrue();
-    }
+            this.quest.Initialize();
 
-    [TestMethod]
-    public void AddingChildQuestWithWrongRootNodeWillThrowException()
-    {
-        var fakeQuest = new DummyQuest("FAKE");
+            this.tasks.All(x => x.Initialized).Should().BeTrue();
+        }
 
-        var task = new DummyTask(fakeQuest);
+        [TestMethod]
+        public void AddingChildQuestAfterInitWillInitializeNewChildQuest()
+        {
+            var task = new DummyTask(this.quest);
+            this.composite.Add(task);
 
-        Action action = () => this.composite.Add(task);
-        action.Should().Throw<ArgumentException>().WithMessage("*root*");
-    }
+            task.Initialized.Should().BeTrue();
+        }
 
-    [TestMethod]
-    public void AddingDisposedChildNodeThrowsException()
-    {
-        var task = new DummyTask(this.quest);
-        task.Initialize();
-        task.Dispose();
+        [TestMethod]
+        public void AddingChildQuestWithWrongRootNodeWillThrowException()
+        {
+            var fakeQuest = new DummyQuest("FAKE");
 
-        Action action = () => this.composite.Add(task);
-        action.Should().Throw<ObjectDisposedException>();
-    }
+            var task = new DummyTask(fakeQuest);
 
-    [TestMethod]
-    public void DisposingQuestWillDisposeChildNodes()
-    {
-        this.quest.Dispose();
+            Action action = () => this.composite.Add(task);
+            action.Should().Throw<ArgumentException>().WithMessage("*root*");
+        }
 
-        this.tasks.All(x => x.Disposed).Should().BeTrue();
-    }
+        [TestMethod]
+        public void AddingDisposedChildNodeThrowsException()
+        {
+            var task = new DummyTask(this.quest);
+            task.Initialize();
+            task.Dispose();
 
-    [TestMethod]
-    public void DisposingQuestWillSetDisposedToTrue()
-    {
-        this.quest.Dispose();
+            Action action = () => this.composite.Add(task);
+            action.Should().Throw<ObjectDisposedException>();
+        }
 
-        this.quest.Disposed.Should().BeTrue();
+        [TestMethod]
+        public void DisposingQuestWillDisposeChildNodes()
+        {
+            this.quest.Dispose();
+
+            this.tasks.All(x => x.Disposed).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void DisposingQuestWillSetDisposedToTrue()
+        {
+            this.quest.Dispose();
+
+            this.quest.Disposed.Should().BeTrue();
+        }
     }
 }

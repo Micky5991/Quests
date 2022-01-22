@@ -5,27 +5,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests.TestBases;
-
-public abstract class QuestTestBase
+namespace Micky5991.Quests.Tests.TestBases
 {
-    protected IServiceProvider SetupServiceProvider(Func<IServiceCollection, IServiceCollection> serviceCollection)
+    public abstract class QuestTestBase
     {
-        return serviceCollection(
-                                 new ServiceCollection()
-                                     .AddLogging(builder => builder.AddSerilog(Logger.None)))
-            .BuildServiceProvider();
-    }
-
-    protected DummyQuest CreateExampleQuest(Func<DummyQuest, IQuestChildNode> setup, bool initialize = true)
-    {
-        var quest = new DummyQuest(setup);
-
-        if (initialize)
+        protected IServiceProvider SetupServiceProvider(Func<IServiceCollection, IServiceCollection> serviceCollection)
         {
-            quest.Initialize();
+            return serviceCollection(
+                                     new ServiceCollection()
+                                         .AddLogging(builder => builder.AddSerilog(Logger.None)))
+                .BuildServiceProvider();
         }
 
-        return quest;
+        protected DummyQuest CreateExampleQuest(Func<DummyQuest, IQuestChildNode> setup, bool initialize = true)
+        {
+            var quest = new DummyQuest(setup);
+
+            if (initialize)
+            {
+                quest.Initialize();
+            }
+
+            return quest;
+        }
     }
 }

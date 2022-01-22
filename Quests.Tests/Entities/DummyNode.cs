@@ -1,34 +1,35 @@
 using Micky5991.Quests.Entities;
 using Micky5991.Quests.Enums;
 
-namespace Micky5991.Quests.Tests.Entities;
-
-public class DummyNode : QuestNode
+namespace Micky5991.Quests.Tests.Entities
 {
-    public void ForceSetState(QuestStatus newStatus)
+    public class DummyNode : QuestNode
     {
-        if (newStatus == QuestStatus.Success)
+        public void ForceSetState(QuestStatus newStatus)
         {
-            this.MarkAsSuccess();
-        }
-        else
-        {
-            this.SetStatus(newStatus);
-        }
-    }
-
-    public bool ForceCanSetState(QuestStatus newStatus)
-    {
-        if (newStatus == QuestStatus.Success)
-        {
-            return this.CanMarkAsSuccess();
+            if (newStatus == QuestStatus.Success)
+            {
+                this.MarkAsSuccess();
+            }
+            else
+            {
+                this.SetStatus(newStatus);
+            }
         }
 
-        return this.CanSetToStatus(newStatus);
-    }
+        public bool ForceCanSetState(QuestStatus newStatus)
+        {
+            if (newStatus == QuestStatus.Success)
+            {
+                return this.CanMarkAsSuccess();
+            }
 
-    public void SetTitle(string title)
-    {
-        this.Title = title!;
+            return this.CanSetToStatus(newStatus);
+        }
+
+        public void SetTitle(string title)
+        {
+            this.Title = title!;
+        }
     }
 }

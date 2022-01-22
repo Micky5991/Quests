@@ -9,92 +9,93 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class SingleNestedQuestFixture
+namespace Micky5991.Quests.Tests
 {
-    private const string QuestTitle = "Example Quest";
-
-    private IServiceProvider serviceProvider;
-
-    private DummyQuest quest;
-
-    private QuestSequenceNode ChildNode => (QuestSequenceNode) this.quest!.ChildNode!;
-
-    private DummyTask NestedChildNode => (DummyTask) this.ChildNode.ChildNodes.First();
-
-    [TestInitialize]
-    public void Setup()
+    [TestClass]
+    public class SingleNestedQuestFixture
     {
-        this.serviceProvider = new ServiceCollection()
-                               .AddLogging(builder => builder.AddSerilog(Logger.None))
-                               .BuildServiceProvider();
+        private const string QuestTitle = "Example Quest";
 
-        this.quest = new DummyQuest(QuestTitle,
-                                      q => new QuestSequenceNode(q)
-                                      {
-                                          new DummyTask(q),
-                                      });
+        private IServiceProvider serviceProvider;
 
-        this.quest.Initialize();
-    }
+        private DummyQuest quest;
 
-    [TestCleanup]
-    public void TearDown()
-    {
-        this.serviceProvider = null;
-        this.quest = null!;
-    }
+        private QuestSequenceNode ChildNode => (QuestSequenceNode) this.quest!.ChildNode!;
 
-    [TestMethod]
-    public void VerifyCorrectTestProperties()
-    {
-        this.ChildNode.Should()
-            .NotBeNull()
-            .And.BeOfType<QuestSequenceNode>();
+        private DummyTask NestedChildNode => (DummyTask) this.ChildNode.ChildNodes.First();
 
-        this.NestedChildNode.Should()
-            .NotBeNull()
-            .And.BeOfType<DummyTask>()
-            .And.Be(this.ChildNode.ChildNodes.First());
-    }
-
-    [TestMethod]
-    public void InitializationHasReachedNestedChild()
-    {
-        this.NestedChildNode.Initialized.Should().BeTrue();
-    }
-
-    [TestMethod]
-    [DataRow(QuestStatus.Sleeping)]
-    [DataRow(QuestStatus.Active)]
-    [DataRow(QuestStatus.Failure)]
-    public void ActivatingRootWillActivateChildAndNestedChild(QuestStatus newStatus)
-    {
-        if (newStatus == QuestStatus.Sleeping)
+        [TestInitialize]
+        public void Setup()
         {
-            this.quest!.SetStatus(QuestStatus.Active);
+            this.serviceProvider = new ServiceCollection()
+                                   .AddLogging(builder => builder.AddSerilog(Logger.None))
+                                   .BuildServiceProvider();
+
+            this.quest = new DummyQuest(QuestTitle,
+                                          q => new QuestSequenceNode(q)
+                                          {
+                                              new DummyTask(q),
+                                          });
+
+            this.quest.Initialize();
         }
 
-        this.quest!.SetStatus(newStatus);
+        [TestCleanup]
+        public void TearDown()
+        {
+            this.serviceProvider = null;
+            this.quest = null!;
+        }
 
-        this.ChildNode.Status.Should().Be(newStatus);
-        this.NestedChildNode.Status.Should().Be(newStatus);
-    }
+        [TestMethod]
+        public void VerifyCorrectTestProperties()
+        {
+            this.ChildNode.Should()
+                .NotBeNull()
+                .And.BeOfType<QuestSequenceNode>();
 
-    [TestMethod]
-    public void DisposingRootWillDisposeChildAndNestedChild()
-    {
-        var childNode = this.ChildNode;
-        var nestedChildNode = this.NestedChildNode;
+            this.NestedChildNode.Should()
+                .NotBeNull()
+                .And.BeOfType<DummyTask>()
+                .And.Be(this.ChildNode.ChildNodes.First());
+        }
 
-        this.quest!.Dispose();
+        [TestMethod]
+        public void InitializationHasReachedNestedChild()
+        {
+            this.NestedChildNode.Initialized.Should().BeTrue();
+        }
 
-        this.quest!.ChildNode.Should().BeNull();
-        childNode.ChildNodes.Should().BeEmpty();
+        [TestMethod]
+        [DataRow(QuestStatus.Sleeping)]
+        [DataRow(QuestStatus.Active)]
+        [DataRow(QuestStatus.Failure)]
+        public void ActivatingRootWillActivateChildAndNestedChild(QuestStatus newStatus)
+        {
+            if (newStatus == QuestStatus.Sleeping)
+            {
+                this.quest!.SetStatus(QuestStatus.Active);
+            }
 
-        childNode.Disposed.Should().BeTrue();
-        nestedChildNode.Disposed.Should().BeTrue();
+            this.quest!.SetStatus(newStatus);
+
+            this.ChildNode.Status.Should().Be(newStatus);
+            this.NestedChildNode.Status.Should().Be(newStatus);
+        }
+
+        [TestMethod]
+        public void DisposingRootWillDisposeChildAndNestedChild()
+        {
+            var childNode = this.ChildNode;
+            var nestedChildNode = this.NestedChildNode;
+
+            this.quest!.Dispose();
+
+            this.quest!.ChildNode.Should().BeNull();
+            childNode.ChildNodes.Should().BeEmpty();
+
+            childNode.Disposed.Should().BeTrue();
+            nestedChildNode.Disposed.Should().BeTrue();
+        }
     }
 }

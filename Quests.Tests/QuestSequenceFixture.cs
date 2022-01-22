@@ -9,142 +9,143 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestSequenceFixture : QuestTestBase
+namespace Micky5991.Quests.Tests
 {
-    private DummyTask[] tasks;
-
-    private DummySequenceNode composite;
-
-    private DummyQuest quest;
-
-    private IServiceProvider serviceProvider;
-
-    [TestInitialize]
-    public void Setup()
+    [TestClass]
+    public class QuestSequenceFixture : QuestTestBase
     {
-        this.serviceProvider = new ServiceCollection()
-                               .AddLogging(builder => builder.AddSerilog(Logger.None))
-                               .BuildServiceProvider();
+        private DummyTask[] tasks;
 
-        this.SetupQuests(true);
-    }
+        private DummySequenceNode composite;
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        try
+        private DummyQuest quest;
+
+        private IServiceProvider serviceProvider;
+
+        [TestInitialize]
+        public void Setup()
         {
-            this.quest.Dispose();
-        }
-        catch (ObjectDisposedException)
-        {
-            // ignore.
+            this.serviceProvider = new ServiceCollection()
+                                   .AddLogging(builder => builder.AddSerilog(Logger.None))
+                                   .BuildServiceProvider();
+
+            this.SetupQuests(true);
         }
 
-        this.quest = null!;
-        this.composite = null!;
-        this.tasks = null!;
-
-        this.serviceProvider = null;
-    }
-
-    private void SetupQuests(bool initialize)
-    {
-        this.quest = this.CreateExampleQuest(q =>
+        [TestCleanup]
+        public void Cleanup()
         {
-            this.tasks = new[]
+            try
             {
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-            };
-
-            this.composite = new DummySequenceNode(q);
-            foreach (var task in this.tasks)
+                this.quest.Dispose();
+            }
+            catch (ObjectDisposedException)
             {
-                this.composite.Add(task);
+                // ignore.
             }
 
-            return this.composite;
-        }, initialize);
-    }
+            this.quest = null!;
+            this.composite = null!;
+            this.tasks = null!;
 
-    [TestMethod]
-    public void ActivateSequenceWillActivateOnlyFirstItem()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var dummySequence = this.quest.ChildNode as DummySequenceNode;
-
-        dummySequence!.ChildNodes[0].Status.Should().Be(QuestStatus.Active);
-        dummySequence!.ChildNodes.Skip(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-    }
-
-    [TestMethod]
-    public void SucceedingCurrentActiveNodeWillActivateNext()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var dummySequence = this.quest.ChildNode as DummySequenceNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
-
-        taskNodes[0].ForceSetState(QuestStatus.Success);
-
-        taskNodes[0].Status.Should().Be(QuestStatus.Success);
-        taskNodes[1].Status.Should().Be(QuestStatus.Active);
-
-        taskNodes.Skip(2).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-    }
-
-    [TestMethod]
-    public void SucceedingPrematurelyInBetweenWillKeepFirstActive()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var dummySequence = this.quest.ChildNode as DummySequenceNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
-
-        taskNodes[1].ForceSetState(QuestStatus.Success);
-
-        taskNodes[0].Status.Should().Be(QuestStatus.Active);
-        taskNodes[1].Status.Should().Be(QuestStatus.Success);
-
-        taskNodes.Skip(2).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
-    }
-
-    [TestMethod]
-    public void FailASingleTaskWillFailComposite()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var dummySequence = this.quest.ChildNode as DummySequenceNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
-
-        taskNodes[3].ForceSetState(QuestStatus.Failure);
-
-        taskNodes.Should().OnlyContain(x => x.Status == QuestStatus.Failure);
-        dummySequence.Status.Should().Be(QuestStatus.Failure);
-    }
-
-    [TestMethod]
-    public void SucceedingAllSubtasksWillSucceedParent()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var dummySequence = this.quest.ChildNode as DummySequenceNode;
-        var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
-
-        foreach (var taskNode in taskNodes)
-        {
-            taskNode.ForceSetState(QuestStatus.Success);
+            this.serviceProvider = null;
         }
 
-        taskNodes.Should().OnlyContain(x => x.Status == QuestStatus.Success);
-        dummySequence.Status.Should().Be(QuestStatus.Success);
+        private void SetupQuests(bool initialize)
+        {
+            this.quest = this.CreateExampleQuest(q =>
+            {
+                this.tasks = new[]
+                {
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                };
+
+                this.composite = new DummySequenceNode(q);
+                foreach (var task in this.tasks)
+                {
+                    this.composite.Add(task);
+                }
+
+                return this.composite;
+            }, initialize);
+        }
+
+        [TestMethod]
+        public void ActivateSequenceWillActivateOnlyFirstItem()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var dummySequence = this.quest.ChildNode as DummySequenceNode;
+
+            dummySequence!.ChildNodes[0].Status.Should().Be(QuestStatus.Active);
+            dummySequence!.ChildNodes.Skip(1).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
+        }
+
+        [TestMethod]
+        public void SucceedingCurrentActiveNodeWillActivateNext()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var dummySequence = this.quest.ChildNode as DummySequenceNode;
+            var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+
+            taskNodes[0].ForceSetState(QuestStatus.Success);
+
+            taskNodes[0].Status.Should().Be(QuestStatus.Success);
+            taskNodes[1].Status.Should().Be(QuestStatus.Active);
+
+            taskNodes.Skip(2).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
+        }
+
+        [TestMethod]
+        public void SucceedingPrematurelyInBetweenWillKeepFirstActive()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var dummySequence = this.quest.ChildNode as DummySequenceNode;
+            var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+
+            taskNodes[1].ForceSetState(QuestStatus.Success);
+
+            taskNodes[0].Status.Should().Be(QuestStatus.Active);
+            taskNodes[1].Status.Should().Be(QuestStatus.Success);
+
+            taskNodes.Skip(2).Should().OnlyContain(x => x.Status == QuestStatus.Sleeping);
+        }
+
+        [TestMethod]
+        public void FailASingleTaskWillFailComposite()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var dummySequence = this.quest.ChildNode as DummySequenceNode;
+            var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+
+            taskNodes[3].ForceSetState(QuestStatus.Failure);
+
+            taskNodes.Should().OnlyContain(x => x.Status == QuestStatus.Failure);
+            dummySequence.Status.Should().Be(QuestStatus.Failure);
+        }
+
+        [TestMethod]
+        public void SucceedingAllSubtasksWillSucceedParent()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var dummySequence = this.quest.ChildNode as DummySequenceNode;
+            var taskNodes = dummySequence!.ChildNodes.Select(x => (DummyTask)x).ToList();
+
+            foreach (var taskNode in taskNodes)
+            {
+                taskNode.ForceSetState(QuestStatus.Success);
+            }
+
+            taskNodes.Should().OnlyContain(x => x.Status == QuestStatus.Success);
+            dummySequence.Status.Should().Be(QuestStatus.Success);
+        }
     }
 }

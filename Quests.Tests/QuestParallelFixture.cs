@@ -10,109 +10,110 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestParallelFixture : QuestTestBase
+namespace Micky5991.Quests.Tests
 {
-    private DummyTask[] tasks;
-
-    private DummyParallelNode composite;
-
-    private DummyQuest quest;
-
-    private IServiceProvider serviceProvider;
-
-    [TestInitialize]
-    public void Setup()
+    [TestClass]
+    public class QuestParallelFixture : QuestTestBase
     {
-        this.serviceProvider = new ServiceCollection()
-                               .AddLogging(builder => builder.AddSerilog(Logger.None))
-                               .BuildServiceProvider();
+        private DummyTask[] tasks;
 
-        this.SetupQuests(true);
-    }
+        private DummyParallelNode composite;
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        try
+        private DummyQuest quest;
+
+        private IServiceProvider serviceProvider;
+
+        [TestInitialize]
+        public void Setup()
         {
-            this.quest.Dispose();
-        }
-        catch (ObjectDisposedException)
-        {
-            // ignore.
+            this.serviceProvider = new ServiceCollection()
+                                   .AddLogging(builder => builder.AddSerilog(Logger.None))
+                                   .BuildServiceProvider();
+
+            this.SetupQuests(true);
         }
 
-        this.quest = null!;
-        this.composite = null!;
-        this.tasks = null!;
-
-        this.serviceProvider = null;
-    }
-
-    private void SetupQuests(bool initialize)
-    {
-        this.quest = this.CreateExampleQuest(q =>
+        [TestCleanup]
+        public void Cleanup()
         {
-            this.tasks = new[]
+            try
             {
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-                new DummyTask(q),
-            };
-
-            this.composite = new DummyParallelNode(q);
-            foreach (var task in this.tasks)
+                this.quest.Dispose();
+            }
+            catch (ObjectDisposedException)
             {
-                this.composite.Add(task);
+                // ignore.
             }
 
-            return this.composite;
-        }, initialize);
-    }
+            this.quest = null!;
+            this.composite = null!;
+            this.tasks = null!;
 
-    [TestMethod]
-    public void ActivatingParallelNodeWillActivateAllOtherNodes()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var childNode = this.quest.ChildNode as IQuestCompositeNode;
-
-        childNode!.ChildNodes.All(x => x.Status == QuestStatus.Active).Should().BeTrue();
-    }
-
-    [TestMethod]
-    public void FailingASingleNodeWillFailComposite()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var childNode = this.quest.ChildNode as IQuestCompositeNode;
-
-        childNode!.ChildNodes[0].SetStatus(QuestStatus.Failure);
-
-        childNode.ChildNodes.All(x => x.Status == QuestStatus.Failure).Should().BeTrue();
-        this.quest.ChildNode!.Status.Should().Be(QuestStatus.Failure);
-    }
-
-    [TestMethod]
-    public void SucceedingAllChildNodesWillSucceedParallel()
-    {
-        this.quest.SetStatus(QuestStatus.Active);
-
-        var childNode = this.quest.ChildNode as DummyParallelNode;
-
-        foreach (var questChildNode in childNode!.ChildNodes)
-        {
-            var node = (DummyTask)questChildNode;
-
-            node.ForceSetState(QuestStatus.Success);
+            this.serviceProvider = null;
         }
 
-        childNode.ChildNodes.All(x => x.Status == QuestStatus.Success).Should().BeTrue();
-        this.quest.ChildNode!.Status.Should().Be(QuestStatus.Success);
+        private void SetupQuests(bool initialize)
+        {
+            this.quest = this.CreateExampleQuest(q =>
+            {
+                this.tasks = new[]
+                {
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                    new DummyTask(q),
+                };
+
+                this.composite = new DummyParallelNode(q);
+                foreach (var task in this.tasks)
+                {
+                    this.composite.Add(task);
+                }
+
+                return this.composite;
+            }, initialize);
+        }
+
+        [TestMethod]
+        public void ActivatingParallelNodeWillActivateAllOtherNodes()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var childNode = this.quest.ChildNode as IQuestCompositeNode;
+
+            childNode!.ChildNodes.All(x => x.Status == QuestStatus.Active).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void FailingASingleNodeWillFailComposite()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var childNode = this.quest.ChildNode as IQuestCompositeNode;
+
+            childNode!.ChildNodes[0].SetStatus(QuestStatus.Failure);
+
+            childNode.ChildNodes.All(x => x.Status == QuestStatus.Failure).Should().BeTrue();
+            this.quest.ChildNode!.Status.Should().Be(QuestStatus.Failure);
+        }
+
+        [TestMethod]
+        public void SucceedingAllChildNodesWillSucceedParallel()
+        {
+            this.quest.SetStatus(QuestStatus.Active);
+
+            var childNode = this.quest.ChildNode as DummyParallelNode;
+
+            foreach (var questChildNode in childNode!.ChildNodes)
+            {
+                var node = (DummyTask)questChildNode;
+
+                node.ForceSetState(QuestStatus.Success);
+            }
+
+            childNode.ChildNodes.All(x => x.Status == QuestStatus.Success).Should().BeTrue();
+            this.quest.ChildNode!.Status.Should().Be(QuestStatus.Success);
+        }
     }
 }

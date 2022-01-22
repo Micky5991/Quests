@@ -6,62 +6,63 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestRootFixture
+namespace Micky5991.Quests.Tests
 {
-    private const string QuestTitle = "Example Quest";
-
-    private IServiceProvider serviceProvider;
-
-    private DummyQuest quest;
-
-    [TestInitialize]
-    public void Setup()
+    [TestClass]
+    public class QuestRootFixture
     {
-        this.serviceProvider = new ServiceCollection()
-                               .AddLogging(builder => builder.AddSerilog(Logger.None))
-                               .BuildServiceProvider();
+        private const string QuestTitle = "Example Quest";
 
-        this.quest = new DummyQuest(QuestTitle, q => new DummyTask(q));
-        this.quest.Initialize();
-    }
+        private IServiceProvider serviceProvider;
 
-    [TestCleanup]
-    public void TearDown()
-    {
-        this.serviceProvider = null;
-    }
+        private DummyQuest quest;
 
-    [TestMethod]
-    public void QuestInstantiationWillSetChildNodeProperty()
-    {
-        this.quest!.ChildNode.Should().NotBeNull().And.BeOfType<DummyTask>();
-    }
+        [TestInitialize]
+        public void Setup()
+        {
+            this.serviceProvider = new ServiceCollection()
+                                   .AddLogging(builder => builder.AddSerilog(Logger.None))
+                                   .BuildServiceProvider();
 
-    [TestMethod]
-    public void QuestInitializatonWorks()
-    {
-        this.quest!.Initialized.Should().BeTrue();
-        this.quest!.Blackboard.Should().NotBeNull().And.BeEmpty();
+            this.quest = new DummyQuest(QuestTitle, q => new DummyTask(q));
+            this.quest.Initialize();
+        }
 
-        this.quest!.Title.Should().Be(QuestTitle);
-    }
+        [TestCleanup]
+        public void TearDown()
+        {
+            this.serviceProvider = null;
+        }
 
-    [TestMethod]
-    public void PassingNullAsQuestNodeThrowsException()
-    {
-        Func<DummyQuest> function = () => new DummyQuest(QuestTitle, _ => null!);
+        [TestMethod]
+        public void QuestInstantiationWillSetChildNodeProperty()
+        {
+            this.quest!.ChildNode.Should().NotBeNull().And.BeOfType<DummyTask>();
+        }
 
-        function.Should().Throw<ArgumentNullException>();
-    }
+        [TestMethod]
+        public void QuestInitializatonWorks()
+        {
+            this.quest!.Initialized.Should().BeTrue();
+            this.quest!.Blackboard.Should().NotBeNull().And.BeEmpty();
 
-    [TestMethod]
-    public void InitializingWithoutChildQuestWillJustWork()
-    {
-        Func<DummyQuest> function = () => new DummyQuest(QuestTitle);
+            this.quest!.Title.Should().Be(QuestTitle);
+        }
 
-        function.Should().NotThrow();
+        [TestMethod]
+        public void PassingNullAsQuestNodeThrowsException()
+        {
+            Func<DummyQuest> function = () => new DummyQuest(QuestTitle, _ => null!);
+
+            function.Should().Throw<ArgumentNullException>();
+        }
+
+        [TestMethod]
+        public void InitializingWithoutChildQuestWillJustWork()
+        {
+            Func<DummyQuest> function = () => new DummyQuest(QuestTitle);
+
+            function.Should().NotThrow();
+        }
     }
 }

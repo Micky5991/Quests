@@ -9,46 +9,47 @@ using Moq;
 using Serilog;
 using Serilog.Core;
 
-namespace Micky5991.Quests.Tests;
-
-[TestClass]
-public class QuestFactoryFixture : QuestTestBase
+namespace Micky5991.Quests.Tests
 {
-    private QuestFactory factory;
-
-    private Mock<IQuestRootNode> quest;
-
-    private IServiceProvider serviceProvider;
-
-    [TestInitialize]
-    public void Setup()
+    [TestClass]
+    public class QuestFactoryFixture : QuestTestBase
     {
-        this.quest = new Mock<IQuestRootNode>();
+        private QuestFactory factory;
 
-        this.serviceProvider = new ServiceCollection()
-                               .AddTransient(x => this.quest.Object)
-                               .AddLogging(builder => builder.AddSerilog(Logger.None))
-                               .BuildServiceProvider();
+        private Mock<IQuestRootNode> quest;
 
-        this.factory = new QuestFactory(this.serviceProvider);
-    }
+        private IServiceProvider serviceProvider;
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        this.quest = null;
+        [TestInitialize]
+        public void Setup()
+        {
+            this.quest = new Mock<IQuestRootNode>();
 
-        this.serviceProvider = null;
-    }
+            this.serviceProvider = new ServiceCollection()
+                                   .AddTransient(x => this.quest.Object)
+                                   .AddLogging(builder => builder.AddSerilog(Logger.None))
+                                   .BuildServiceProvider();
 
-    [TestMethod]
-    public void QuestFactoryInitializesQuest()
-    {
-        this.quest.Setup(x => x.Initialize());
+            this.factory = new QuestFactory(this.serviceProvider);
+        }
 
-        var createdQuest = this.factory.BuildQuest<IQuestRootNode>();
+        [TestCleanup]
+        public void Cleanup()
+        {
+            this.quest = null;
 
-        createdQuest.Should().BeSameAs(this.quest.Object);
-        this.quest.Verify(x => x.Initialize(), Times.Once);
+            this.serviceProvider = null;
+        }
+
+        [TestMethod]
+        public void QuestFactoryInitializesQuest()
+        {
+            this.quest.Setup(x => x.Initialize());
+
+            var createdQuest = this.factory.BuildQuest<IQuestRootNode>();
+
+            createdQuest.Should().BeSameAs(this.quest.Object);
+            this.quest.Verify(x => x.Initialize(), Times.Once);
+        }
     }
 }
