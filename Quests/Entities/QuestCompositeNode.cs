@@ -3,82 +3,83 @@ using Dawn;
 using JetBrains.Annotations;
 using Micky5991.Quests.Interfaces.Nodes;
 
-namespace Micky5991.Quests.Entities;
-
-/// <inheritdoc cref="IQuestCompositeNode" />
-[PublicAPI]
-public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
+namespace Micky5991.Quests.Entities
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="QuestCompositeNode"/> class.
-    /// </summary>
-    /// <param name="rootNode">Root node of this quest tree.</param>
-    public QuestCompositeNode(IQuestRootNode rootNode)
-        : base(rootNode)
+    /// <inheritdoc cref="IQuestCompositeNode" />
+    [PublicAPI]
+    public abstract class QuestCompositeNode : QuestChildNode, IQuestCompositeNode
     {
-        this.Title = "COMPOSITE NODE";
-    }
-
-    /// <inheritdoc />
-    public IImmutableList<IQuestChildNode> ChildNodes { get; private set; } = ImmutableList<IQuestChildNode>.Empty;
-
-    /// <summary>
-    /// Adds a node to the current quest tree.
-    /// </summary>
-    /// <param name="childNode">New child that should be added to this tree.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="childNode"/> is null.</exception>
-    public virtual void Add(IQuestChildNode childNode)
-    {
-        Guard.Argument(childNode, nameof(childNode)).NotNull();
-        Guard.Disposal(childNode.Disposed, nameof(childNode));
-
-        if (childNode.RootNode != this.RootNode)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestCompositeNode"/> class.
+        /// </summary>
+        /// <param name="rootNode">Root node of this quest tree.</param>
+        public QuestCompositeNode(IQuestRootNode rootNode)
+            : base(rootNode)
         {
-            throw new ArgumentException($"Could not add child node {childNode} to composite. Wrong root node.");
+            this.Title = "COMPOSITE NODE";
         }
 
-        if (this.Initialized)
+        /// <inheritdoc />
+        public IImmutableList<IQuestChildNode> ChildNodes { get; private set; } = ImmutableList<IQuestChildNode>.Empty;
+
+        /// <summary>
+        /// Adds a node to the current quest tree.
+        /// </summary>
+        /// <param name="childNode">New child that should be added to this tree.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="childNode"/> is null.</exception>
+        public virtual void Add(IQuestChildNode childNode)
         {
-            childNode.Initialize();
+            Guard.Argument(childNode, nameof(childNode)).NotNull();
+            Guard.Disposal(childNode.Disposed, nameof(childNode));
+
+            if (childNode.RootNode != this.RootNode)
+            {
+                throw new ArgumentException($"Could not add child node {childNode} to composite. Wrong root node.");
+            }
+
+            if (this.Initialized)
+            {
+                childNode.Initialize();
+            }
+
+            this.ChildNodes = this.ChildNodes.Add(childNode);
         }
 
-        this.ChildNodes = this.ChildNodes.Add(childNode);
-    }
-
-    /// <inheritdoc />
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        foreach (var childNode in this.ChildNodes)
+        /// <inheritdoc />
+        public override void Initialize()
         {
-            childNode.Initialize();
-        }
-    }
+            base.Initialize();
 
-    /// <inheritdoc />
-    public override void Dispose()
-    {
-        var childs = this.ChildNodes;
-        this.ChildNodes = ImmutableList<IQuestChildNode>.Empty;
-
-        foreach (var childNode in childs)
-        {
-            childNode.Dispose();
+            foreach (var childNode in this.ChildNodes)
+            {
+                childNode.Initialize();
+            }
         }
 
-        base.Dispose();
-    }
+        /// <inheritdoc />
+        public override void Dispose()
+        {
+            var childs = this.ChildNodes;
+            this.ChildNodes = ImmutableList<IQuestChildNode>.Empty;
 
-    /// <inheritdoc />
-    public IEnumerator<IQuestChildNode> GetEnumerator()
-    {
-        return this.ChildNodes.GetEnumerator();
-    }
+            foreach (var childNode in childs)
+            {
+                childNode.Dispose();
+            }
 
-    /// <inheritdoc/>
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
+            base.Dispose();
+        }
+
+        /// <inheritdoc />
+        public IEnumerator<IQuestChildNode> GetEnumerator()
+        {
+            return this.ChildNodes.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

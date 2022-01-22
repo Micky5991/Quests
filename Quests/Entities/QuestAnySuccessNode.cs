@@ -3,120 +3,121 @@ using Dawn;
 using Micky5991.Quests.Enums;
 using Micky5991.Quests.Interfaces.Nodes;
 
-namespace Micky5991.Quests.Entities;
-
-/// <summary>
-/// Type that holds multiple child nodes and activates them all at once on node activation. As soon as the first child
-/// node signals a success, this node will also mark as success. When no other succeedable nodes are in this composite,
-/// this node will be marked as failure.
-/// </summary>
-public class QuestAnySuccessNode : QuestCompositeNode
+namespace Micky5991.Quests.Entities
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="QuestAnySuccessNode"/> class.
+    /// Type that holds multiple child nodes and activates them all at once on node activation. As soon as the first child
+    /// node signals a success, this node will also mark as success. When no other succeedable nodes are in this composite,
+    /// this node will be marked as failure.
     /// </summary>
-    /// <param name="rootNode">Reference to root node.</param>
-    public QuestAnySuccessNode(IQuestRootNode rootNode)
-        : base(rootNode)
+    public class QuestAnySuccessNode : QuestCompositeNode
     {
-        this.Title = "ANY SUCCESS NODE";
-    }
-
-    /// <inheritdoc />
-    public override void Add(IQuestChildNode childNode)
-    {
-        Guard.Argument(childNode, nameof(childNode)).NotNull();
-
-        base.Add(childNode);
-
-        childNode.PropertyChanged += this.OnChildNodeOnPropertyChanged;
-    }
-
-    /// <inheritdoc />
-    protected override void OnStatusChanged(QuestStatus newStatus)
-    {
-        Guard.Argument(newStatus, nameof(newStatus)).Defined();
-
-        switch (newStatus)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestAnySuccessNode"/> class.
+        /// </summary>
+        /// <param name="rootNode">Reference to root node.</param>
+        public QuestAnySuccessNode(IQuestRootNode rootNode)
+            : base(rootNode)
         {
-            case QuestStatus.Failure:
-                foreach (var childNode in this.ChildNodes)
-                {
-                    childNode.SetStatus(QuestStatus.Failure);
-                }
-
-                break;
-
-            case QuestStatus.Active:
-                this.MarkAllChildsAsActive();
-
-                break;
-
-            case QuestStatus.Sleeping:
-                this.MarkAllChildsAsSleeping();
-
-                break;
+            this.Title = "ANY SUCCESS NODE";
         }
 
-        base.OnStatusChanged(newStatus);
-    }
-
-    /// <inheritdoc />
-    protected override void MarkAsSuccess()
-    {
-        this.MarkAllChildsAsSleeping();
-
-        base.MarkAsSuccess();
-    }
-
-    private void MarkAllChildsAsActive()
-    {
-        if (this.ChildNodes.Count == 0 || this.ChildNodes.All(x => x.Status == QuestStatus.Failure))
+        /// <inheritdoc />
+        public override void Add(IQuestChildNode childNode)
         {
-            this.SetStatus(QuestStatus.Failure);
+            Guard.Argument(childNode, nameof(childNode)).NotNull();
 
-            return;
+            base.Add(childNode);
+
+            childNode.PropertyChanged += this.OnChildNodeOnPropertyChanged;
         }
 
-        if (this.ChildNodes.Any(x => x.Status == QuestStatus.Success))
+        /// <inheritdoc />
+        protected override void OnStatusChanged(QuestStatus newStatus)
         {
-            this.MarkAsSuccess();
+            Guard.Argument(newStatus, nameof(newStatus)).Defined();
 
-            return;
+            switch (newStatus)
+            {
+                case QuestStatus.Failure:
+                    foreach (var childNode in this.ChildNodes)
+                    {
+                        childNode.SetStatus(QuestStatus.Failure);
+                    }
+
+                    break;
+
+                case QuestStatus.Active:
+                    this.MarkAllChildsAsActive();
+
+                    break;
+
+                case QuestStatus.Sleeping:
+                    this.MarkAllChildsAsSleeping();
+
+                    break;
+            }
+
+            base.OnStatusChanged(newStatus);
         }
 
-        foreach (var node in this.ChildNodes.Where(x => x.Status == QuestStatus.Sleeping))
+        /// <inheritdoc />
+        protected override void MarkAsSuccess()
         {
-            node.SetStatus(QuestStatus.Active);
+            this.MarkAllChildsAsSleeping();
+
+            base.MarkAsSuccess();
         }
-    }
 
-    private void MarkAllChildsAsSleeping()
-    {
-        foreach (var childNode in this.ChildNodes.Where(x => x.CanSetToStatus(QuestStatus.Sleeping)))
+        private void MarkAllChildsAsActive()
         {
-            childNode.SetStatus(QuestStatus.Sleeping);
-        }
-    }
+            if (this.ChildNodes.Count == 0 || this.ChildNodes.All(x => x.Status == QuestStatus.Failure))
+            {
+                this.SetStatus(QuestStatus.Failure);
 
-    private void OnChildNodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        Guard.Argument(sender, nameof(sender)).NotNull();
-        Guard.Argument(e, nameof(e)).NotNull();
+                return;
+            }
 
-        switch (e.PropertyName)
-        {
-            case nameof(IQuestChildNode.Status)
-                when sender is IQuestChildNode childNode && childNode.Status == QuestStatus.Success:
+            if (this.ChildNodes.Any(x => x.Status == QuestStatus.Success))
+            {
                 this.MarkAsSuccess();
 
-                break;
+                return;
+            }
 
-            case nameof(IQuestChildNode.Status)
-                when sender is IQuestChildNode childNode && childNode.Status == QuestStatus.Failure:
-                this.MarkAllChildsAsActive();
+            foreach (var node in this.ChildNodes.Where(x => x.Status == QuestStatus.Sleeping))
+            {
+                node.SetStatus(QuestStatus.Active);
+            }
+        }
 
-                break;
+        private void MarkAllChildsAsSleeping()
+        {
+            foreach (var childNode in this.ChildNodes.Where(x => x.CanSetToStatus(QuestStatus.Sleeping)))
+            {
+                childNode.SetStatus(QuestStatus.Sleeping);
+            }
+        }
+
+        private void OnChildNodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Guard.Argument(sender, nameof(sender)).NotNull();
+            Guard.Argument(e, nameof(e)).NotNull();
+
+            switch (e.PropertyName)
+            {
+                case nameof(IQuestChildNode.Status)
+                    when sender is IQuestChildNode childNode && childNode.Status == QuestStatus.Success:
+                    this.MarkAsSuccess();
+
+                    break;
+
+                case nameof(IQuestChildNode.Status)
+                    when sender is IQuestChildNode childNode && childNode.Status == QuestStatus.Failure:
+                    this.MarkAllChildsAsActive();
+
+                    break;
+            }
         }
     }
 }

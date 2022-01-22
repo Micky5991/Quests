@@ -2,41 +2,42 @@ using Micky5991.EventAggregator.Interfaces;
 using Micky5991.Quests.Entities;
 using Micky5991.Quests.Example.Quests.Childs;
 
-namespace Micky5991.Quests.Example.Quests;
-
-public class WelcomeHomeQuest : QuestRootNode
+namespace Micky5991.Quests.Example.Quests
 {
-    public WelcomeHomeQuest(IEventAggregator eventAggregator)
+    public class WelcomeHomeQuest : QuestRootNode
     {
-        this.Title = "In The Beginning";
+        public WelcomeHomeQuest(IEventAggregator eventAggregator)
+        {
+            this.Title = "In The Beginning";
 
-        this.SetChildQuests(
-                            new QuestSequenceNode(this)
-                            {
-                                new EnterZoneTask(this, 5, eventAggregator),
-                                new QuestParallelNode(this)
+            this.SetChildQuests(
+                                new QuestSequenceNode(this)
                                 {
-                                    new StayAliveTask(this, eventAggregator),
-                                    new KillTask(this, eventAggregator),
-                                },
-                                new QuestFirstSuccessSequenceNode(this)
-                                {
+                                    new EnterZoneTask(this, 5, eventAggregator),
                                     new QuestParallelNode(this)
                                     {
                                         new StayAliveTask(this, eventAggregator),
                                         new KillTask(this, eventAggregator),
                                     },
-                                    new QuestParallelNode(this)
+                                    new QuestFirstSuccessSequenceNode(this)
                                     {
-                                        new StayAliveTask(this, eventAggregator),
-                                        new EnterZoneTask(this, 4, eventAggregator),
+                                        new QuestParallelNode(this)
+                                        {
+                                            new StayAliveTask(this, eventAggregator),
+                                            new KillTask(this, eventAggregator),
+                                        },
+                                        new QuestParallelNode(this)
+                                        {
+                                            new StayAliveTask(this, eventAggregator),
+                                            new EnterZoneTask(this, 4, eventAggregator),
+                                        },
+                                        new QuestParallelNode(this)
+                                        {
+                                            new EnterZoneTask(this, 2, eventAggregator),
+                                        },
                                     },
-                                    new QuestParallelNode(this)
-                                    {
-                                        new EnterZoneTask(this, 2, eventAggregator),
-                                    },
-                                },
-                                new LeaveZoneTask(this, 5, eventAggregator),
-                            });
+                                    new LeaveZoneTask(this, 5, eventAggregator),
+                                });
+        }
     }
 }

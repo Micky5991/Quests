@@ -5,31 +5,32 @@ using Micky5991.Quests.Example.Entities;
 using Micky5991.Quests.Example.Events;
 using Micky5991.Quests.Interfaces.Nodes;
 
-namespace Micky5991.Quests.Example.Quests.Childs;
-
-public class StayAliveTask : QuestEventConditionTaskNode
+namespace Micky5991.Quests.Example.Quests.Childs
 {
-    private readonly IEventAggregator eventAggregator;
-
-    public StayAliveTask(IQuestRootNode rootNode, IEventAggregator eventAggregator)
-        : base(rootNode)
+    public class StayAliveTask : QuestEventConditionTaskNode
     {
-        this.eventAggregator = eventAggregator;
-        this.Title = "Stay alive during the attack.";
-    }
+        private readonly IEventAggregator eventAggregator;
 
-    protected override IEnumerable<ISubscription> GetEventSubscriptions()
-    {
-        yield return this.eventAggregator.Subscribe<KillEvent>(this.OnEntityKill);
-    }
-
-    private void OnEntityKill(KillEvent eventdata)
-    {
-        if (eventdata.Victim is not Player)
+        public StayAliveTask(IQuestRootNode rootNode, IEventAggregator eventAggregator)
+            : base(rootNode)
         {
-            return;
+            this.eventAggregator = eventAggregator;
+            this.Title = "Stay alive during the attack.";
         }
 
-        this.SetStatus(QuestStatus.Failure);
+        protected override IEnumerable<ISubscription> GetEventSubscriptions()
+        {
+            yield return this.eventAggregator.Subscribe<KillEvent>(this.OnEntityKill);
+        }
+
+        private void OnEntityKill(KillEvent eventdata)
+        {
+            if (eventdata.Victim is not Player)
+            {
+                return;
+            }
+
+            this.SetStatus(QuestStatus.Failure);
+        }
     }
 }

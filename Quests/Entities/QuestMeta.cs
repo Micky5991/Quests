@@ -1,31 +1,32 @@
 using Dawn;
 using Micky5991.Quests.Interfaces.Nodes;
 
-namespace Micky5991.Quests.Entities;
-
-/// <summary>
-/// Basic quest meta information model. Will be used to register all quests to the DI container.
-/// </summary>
-public class QuestMeta
+namespace Micky5991.Quests.Entities
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="QuestMeta"/> class.
+    /// Basic quest meta information model. Will be used to register all quests to the DI container.
     /// </summary>
-    /// <param name="type">Implementation type of this quest.</param>
-    public QuestMeta(Type type)
+    public class QuestMeta
     {
-        Guard.Argument(type, nameof(type)).NotNull();
-
-        if (type.GetInterfaces().Contains(typeof(IQuestRootNode)) == false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestMeta"/> class.
+        /// </summary>
+        /// <param name="type">Implementation type of this quest.</param>
+        public QuestMeta(Type type)
         {
-            throw new ArgumentException($"The type {type} does not implement {typeof(IQuestRootNode)}.");
+            Guard.Argument(type, nameof(type)).NotNull();
+
+            if (type.GetInterfaces().Contains(typeof(IQuestRootNode)) == false)
+            {
+                throw new ArgumentException($"The type {type} does not implement {typeof(IQuestRootNode)}.");
+            }
+
+            this.Type = type;
         }
 
-        this.Type = type;
+        /// <summary>
+        /// Gets the implementation type of specific quest to use.
+        /// </summary>
+        public Type Type { get; }
     }
-
-    /// <summary>
-    /// Gets the implementation type of specific quest to use.
-    /// </summary>
-    public Type Type { get; }
 }
